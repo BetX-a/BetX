@@ -11,7 +11,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
   <style>
+
     /* ============================================================
        DESIGN TOKENS
        ============================================================ */
@@ -1925,16 +1927,1251 @@
         transition-duration: 0.01ms !important;
       }
     }
+  
   </style>
+  <style>
+    /* ============================================================
+       PAGE: LOGIN (page-specific layout)
+       ============================================================ */
+    #page-login { display: none; }
+
+    /* ---- Auth layout ---- */
+    .auth-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* Left panel — decorative */
+    .auth-visual {
+      background: var(--color-surface-1);
+      border-right: 1px solid var(--color-border-dim);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: var(--space-8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decorative grid */
+    .auth-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 80% 90% at 30% 50%, black 30%, transparent 100%);
+    }
+
+    /* Gold radial */
+    .auth-visual::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 30%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(212,175,55,.09) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .auth-visual__top { position: relative; z-index: 1; }
+
+    .auth-visual__content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-visual__heading {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.03em;
+      margin-bottom: var(--space-4);
+    }
+
+    .auth-visual__heading em {
+      font-style: normal;
+      color: var(--color-gold);
+    }
+
+    .auth-visual__sub {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.75;
+      max-width: 320px;
+      margin-bottom: var(--space-8);
+    }
+
+    /* Mini stat row */
+    .auth-stats {
+      display: flex;
+      gap: var(--space-6);
+    }
+
+    .auth-stat__val {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 800;
+      color: var(--color-text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .auth-stat__val--gold { color: var(--color-gold); }
+
+    .auth-stat__label {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    /* Floating testimonial card */
+    .auth-testimonial {
+      background: rgba(22,22,22,.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      margin-top: var(--space-8);
+      max-width: 360px;
+    }
+
+    .auth-testimonial__quote {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.7;
+      margin-bottom: var(--space-4);
+    }
+
+    .auth-testimonial__author {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .auth-testimonial__name {
+      font-size: var(--text-sm);
+      font-weight: 600;
+    }
+
+    .auth-testimonial__tag {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    .auth-visual__bottom {
+      position: relative;
+      z-index: 1;
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    /* Right panel — form */
+    .auth-form-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--space-8) clamp(var(--space-8), 8vw, 80px);
+      max-height: 100vh;
+      overflow-y: auto;
+    }
+
+    .auth-form-panel__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-12);
+    }
+
+    .auth-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      transition: color var(--duration-fast);
+    }
+
+    .auth-back:hover { color: var(--color-text-primary); }
+
+    .auth-form__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: var(--space-2);
+    }
+
+    .auth-form__subtitle {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-8);
+    }
+
+    .auth-form__subtitle a {
+      color: var(--color-gold);
+      font-weight: 500;
+    }
+
+    .auth-form__subtitle a:hover { text-decoration: underline; }
+
+    /* OAuth buttons */
+    .oauth-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .oauth-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: .7rem 1rem;
+      background: var(--color-surface-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--color-text-primary);
+      transition: all var(--duration-fast);
+      font-family: var(--font-body);
+      cursor: pointer;
+    }
+
+    .oauth-btn:hover {
+      background: var(--color-surface-4);
+      border-color: var(--color-border);
+    }
+
+    .oauth-btn__icon {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    /* Form */
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .form-row-inline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--color-gold);
+      cursor: pointer;
+    }
+
+    .forgot-link {
+      font-size: var(--text-sm);
+      color: var(--color-gold);
+      font-weight: 500;
+    }
+
+    .forgot-link:hover { text-decoration: underline; }
+
+    .auth-form__cta {
+      margin-top: var(--space-2);
+    }
+
+    .auth-form__footer {
+      margin-top: var(--space-6);
+      text-align: center;
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+    }
+
+    .auth-form__footer a {
+      color: var(--color-gold);
+      font-weight: 500;
+    }
+
+    .auth-form__footer a:hover { text-decoration: underline; }
+
+    /* Toast / error message */
+    .auth-alert {
+      display: none;
+      padding: var(--space-3) var(--space-4);
+      background: rgba(239,68,68,.08);
+      border: 1px solid rgba(239,68,68,.2);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      color: var(--color-loss);
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .auth-alert.visible { display: flex; }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 900px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-visual { display: none; }
+      .auth-form-panel { padding: var(--space-8) var(--space-6); max-height: unset; justify-content: flex-start; padding-top: var(--space-10); }
+    }
+  
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  </style>
+  <style>
+    /* ============================================================
+       PAGE: REGISTER (page-specific layout)
+       ============================================================ */
+    #page-register { display: none; }
+
+    .auth-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .auth-visual {
+      background: var(--color-surface-1);
+      border-right: 1px solid var(--color-border-dim);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: var(--space-8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 80% 90% at 30% 50%, black 30%, transparent 100%);
+    }
+
+    .auth-visual::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 30%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(212,175,55,.09) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .auth-visual__top, .auth-visual__content, .auth-visual__bottom { position: relative; z-index: 1; }
+
+    .auth-visual__heading {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.03em;
+      margin-bottom: var(--space-4);
+    }
+
+    .auth-visual__heading em { font-style: normal; color: var(--color-gold); }
+
+    .auth-visual__sub {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.75;
+      max-width: 340px;
+      margin-bottom: var(--space-8);
+    }
+
+    /* Benefit list */
+    .benefit-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      margin-bottom: var(--space-8);
+    }
+
+    .benefit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+
+    .benefit-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--color-gold-subtle);
+      border: 1px solid rgba(212,175,55,.2);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .benefit-text__title { font-size: var(--text-sm); font-weight: 600; margin-bottom: 2px; }
+    .benefit-text__sub { font-size: var(--text-xs); color: var(--color-text-muted); line-height: 1.5; }
+
+    /* Mini creator card showing earnings — social proof for creators */
+    .earnings-card {
+      background: rgba(22,22,22,.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(212,175,55,.2);
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      max-width: 360px;
+    }
+
+    .earnings-card__label {
+      font-size: var(--text-xs);
+      color: var(--color-gold);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: var(--space-3);
+    }
+
+    .earnings-card__row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-2) 0;
+      border-bottom: 1px solid var(--color-border-dim);
+    }
+
+    .earnings-card__row:last-child { border-bottom: none; }
+
+    .earnings-card__name {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      font-weight: 600;
+    }
+
+    .earnings-card__val {
+      font-family: var(--font-display);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      color: var(--color-win);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .auth-form-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--space-8) clamp(var(--space-8), 8vw, 80px);
+      max-height: 100vh;
+      overflow-y: auto;
+    }
+
+    .auth-form-panel__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-10);
+    }
+
+    .auth-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      transition: color var(--duration-fast);
+    }
+
+    .auth-back:hover { color: var(--color-text-primary); }
+
+    .auth-form__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: var(--space-2);
+    }
+
+    .auth-form__subtitle {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+    }
+
+    .auth-form__subtitle a { color: var(--color-gold); font-weight: 500; }
+    .auth-form__subtitle a:hover { text-decoration: underline; }
+
+    .oauth-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .oauth-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: .7rem 1rem;
+      background: var(--color-surface-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--color-text-primary);
+      transition: all var(--duration-fast);
+      font-family: var(--font-body);
+      cursor: pointer;
+    }
+
+    .oauth-btn:hover { background: var(--color-surface-4); }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .name-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+
+    /* Username availability indicator */
+    .username-status {
+      position: absolute;
+      right: .875rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .username-status--checking { color: var(--color-text-muted); }
+    .username-status--available { color: var(--color-win); }
+    .username-status--taken { color: var(--color-loss); }
+
+    /* Password strength meter */
+    .strength-meter {
+      display: flex;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .strength-bar {
+      height: 3px;
+      flex: 1;
+      background: var(--color-surface-4);
+      border-radius: 2px;
+      transition: background var(--duration-fast);
+    }
+
+    .strength-label {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      user-select: none;
+      line-height: 1.5;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--color-gold);
+      cursor: pointer;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .checkbox-label a { color: var(--color-gold); }
+    .checkbox-label a:hover { text-decoration: underline; }
+
+    .auth-form__footer {
+      margin-top: var(--space-6);
+      text-align: center;
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+    }
+
+    .auth-form__footer a { color: var(--color-gold); font-weight: 500; }
+    .auth-form__footer a:hover { text-decoration: underline; }
+
+    .auth-alert {
+      display: none;
+      padding: var(--space-3) var(--space-4);
+      background: rgba(239,68,68,.08);
+      border: 1px solid rgba(239,68,68,.2);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      color: var(--color-loss);
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .auth-alert.visible { display: flex; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 900px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-visual { display: none; }
+      .auth-form-panel { padding: var(--space-8) var(--space-6); max-height: unset; justify-content: flex-start; padding-top: var(--space-10); }
+      .name-row { grid-template-columns: 1fr; }
+    }
+  
+  </style>
+  <style>
+    /* ============================================================
+       PAGE: FEED (app shell layout)
+       ============================================================ */
+    #page-feed { display: none; }
+
+    /* ============================================================
+       APP SHELL LAYOUT
+       ============================================================ */
+    body { background: var(--color-base); }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr var(--right-rail-width);
+      min-height: 100vh;
+    }
+
+    /* ---- Left Sidebar ---- */
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 1px solid var(--color-border-dim);
+      padding: var(--space-6) var(--space-4);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .sidebar__top { display: flex; flex-direction: column; gap: var(--space-8); }
+
+    .sidebar__logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 0 var(--space-2);
+    }
+
+    .sidebar-nav { display: flex; flex-direction: column; gap: 2px; }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: .7rem var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--text-md);
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      transition: all var(--duration-fast);
+      position: relative;
+    }
+
+    .sidebar-link svg { width: 22px; height: 22px; stroke-width: 1.75; flex-shrink: 0; }
+
+    .sidebar-link:hover { background: var(--color-surface-2); color: var(--color-text-primary); }
+
+    .sidebar-link.active {
+      color: var(--color-text-primary);
+      font-weight: 700;
+    }
+
+    .sidebar-link.active svg { stroke: var(--color-gold); color: var(--color-gold); }
+
+    .sidebar-link__badge {
+      margin-left: auto;
+      background: var(--color-loss);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: var(--radius-full);
+      min-width: 18px;
+      text-align: center;
+    }
+
+    .sidebar-create-btn {
+      margin-top: var(--space-2);
+      background: var(--color-gold);
+      color: var(--color-text-inverse);
+      padding: .75rem var(--space-4);
+      border-radius: var(--radius-full);
+      font-weight: 700;
+      font-size: var(--text-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      transition: all var(--duration-base);
+    }
+
+    .sidebar-create-btn:hover { background: #e0c040; box-shadow: 0 4px 20px rgba(212,175,55,.3); }
+
+    /* User mini card at bottom of sidebar */
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      transition: background var(--duration-fast);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .sidebar-user:hover { background: var(--color-surface-2); }
+
+    .sidebar-user__info { flex: 1; min-width: 0; }
+    .sidebar-user__name { font-size: var(--text-sm); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px; }
+    .sidebar-user__handle { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+    /* ---- Main feed column ---- */
+    .feed-main {
+      border-right: 1px solid var(--color-border-dim);
+      min-height: 100vh;
+    }
+
+    .feed-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(13,13,13,.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--color-border-dim);
+      padding: var(--space-4) var(--space-5);
+    }
+
+    .feed-topbar__title { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-4); }
+
+    .feed-tabs {
+      display: flex;
+      gap: var(--space-1);
+      background: var(--color-surface-2);
+      padding: 4px;
+      border-radius: var(--radius-full);
+      width: fit-content;
+    }
+
+    .feed-tab {
+      padding: 7px 18px;
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      transition: all var(--duration-fast);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .feed-tab:hover { color: var(--color-text-primary); }
+    .feed-tab.active { background: var(--color-gold); color: var(--color-text-inverse); }
+
+    /* Stories / active creators strip */
+    .stories-strip {
+      display: flex;
+      gap: var(--space-4);
+      padding: var(--space-4) var(--space-5);
+      overflow-x: auto;
+      border-bottom: 1px solid var(--color-border-dim);
+      scrollbar-width: none;
+    }
+
+    .stories-strip::-webkit-scrollbar { display: none; }
+
+    .story-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+      width: 64px;
+      cursor: pointer;
+    }
+
+    .story-avatar-ring {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      padding: 2.5px;
+      background: linear-gradient(135deg, var(--color-gold), #fff5d0, var(--color-gold-dim));
+      flex-shrink: 0;
+    }
+
+    .story-avatar-ring--seen { background: var(--color-border); }
+
+    .story-avatar-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--color-base);
+      padding: 2px;
+    }
+
+    .story-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .story-name { font-size: 10px; color: var(--color-text-secondary); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+
+    /* Composer prompt */
+    .composer-prompt {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 8px solid var(--color-surface-1);
+    }
+
+    .composer-input {
+      flex: 1;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border-dim);
+      border-radius: var(--radius-full);
+      padding: .65rem var(--space-4);
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: border-color var(--duration-fast);
+    }
+
+    .composer-input:hover { border-color: var(--color-border); color: var(--color-text-secondary); }
+
+    /* ---- Feed posts ---- */
+    .feed-posts { display: flex; flex-direction: column; }
+
+    .post {
+      padding: var(--space-5);
+      border-bottom: 1px solid var(--color-border-dim);
+    }
+
+    .post__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-4);
+    }
+
+    .post__user { display: flex; align-items: center; gap: var(--space-3); cursor: pointer; }
+    .post__username { font-size: var(--text-sm); font-weight: 700; display: flex; align-items: center; gap: 4px; }
+    .post__meta { font-size: var(--text-xs); color: var(--color-text-muted); display: flex; align-items: center; gap: 5px; }
+
+    .post__more { color: var(--color-text-muted); padding: 6px; border-radius: var(--radius-sm); transition: all var(--duration-fast); }
+    .post__more:hover { background: var(--color-surface-2); color: var(--color-text-primary); }
+
+    .post__game-card {
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border-dim);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-3);
+    }
+
+    .post__game-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-3);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--color-border-dim);
+    }
+
+    .post__game-league { font-size: var(--text-xs); font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: .06em; }
+
+    .post__game-teams {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-3);
+    }
+
+    .post__team { text-align: center; flex: 1; }
+    .post__team-icon { font-size: 28px; margin-bottom: 4px; }
+    .post__team-name { font-size: var(--text-xs); font-weight: 600; color: var(--color-text-secondary); }
+    .post__vs { font-size: var(--text-xs); color: var(--color-text-muted); font-weight: 700; }
+
+    .post__bet-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--color-surface-3);
+      border-radius: var(--radius-md);
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .post__bet-type { font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: 2px; }
+    .post__bet-pick { font-size: var(--text-md); font-weight: 700; color: var(--color-text-primary); }
+    .post__bet-odds { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 800; color: var(--color-gold); font-variant-numeric: tabular-nums; }
+
+    .post__tags { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-bottom: var(--space-3); }
+
+    .post__caption { font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.65; margin-bottom: var(--space-4); }
+    .post__caption--blur { filter: blur(5px); user-select: none; }
+
+    .post__premium-lock {
+      text-align: center;
+      padding: var(--space-5);
+      background: var(--color-gold-subtle);
+      border: 1px solid rgba(212,175,55,.2);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-4);
+    }
+
+    .post__premium-lock-icon { font-size: 26px; margin-bottom: var(--space-2); }
+    .post__premium-lock-text { font-size: var(--text-sm); color: var(--color-gold); font-weight: 600; margin-bottom: var(--space-3); }
+
+    .post__media {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: var(--space-4);
+      aspect-ratio: 16/9;
+      background: linear-gradient(135deg, var(--color-surface-3), var(--color-surface-4));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      position: relative;
+    }
+
+    .post__media-play {
+      position: absolute;
+      width: 52px;
+      height: 52px;
+      background: rgba(0,0,0,.5);
+      backdrop-filter: blur(4px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+    }
+
+    .post__footer { display: flex; align-items: center; justify-content: space-between; }
+
+    .post__actions { display: flex; align-items: center; gap: var(--space-5); }
+
+    .post__act {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      transition: color var(--duration-fast);
+      font-weight: 500;
+    }
+
+    .post__act svg { width: 19px; height: 19px; stroke-width: 1.75; transition: all var(--duration-fast); }
+    .post__act:hover { color: var(--color-text-primary); }
+    .post__act:hover svg { transform: scale(1.1); }
+    .post__act.liked { color: var(--color-loss); }
+    .post__act.liked svg { fill: var(--color-loss); stroke: var(--color-loss); }
+    .post__act.saved { color: var(--color-gold); }
+    .post__act.saved svg { fill: var(--color-gold); stroke: var(--color-gold); }
+
+    /* Loading skeleton post */
+    .post-skeleton { padding: var(--space-5); border-bottom: 1px solid var(--color-border-dim); }
+    .skel-row { display: flex; gap: var(--space-3); align-items: center; margin-bottom: var(--space-4); }
+    .skel-avatar { width: 40px; height: 40px; border-radius: 50%; }
+    .skel-line { height: 12px; border-radius: 4px; }
+
+    /* End of feed */
+    .feed-end {
+      padding: var(--space-12) var(--space-5);
+      text-align: center;
+      color: var(--color-text-muted);
+      font-size: var(--text-sm);
+    }
+
+    /* ---- Right rail ---- */
+    .right-rail {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: var(--space-6) var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+      scrollbar-width: thin;
+    }
+
+    .rail-search {
+      position: relative;
+    }
+
+    .rail-search input {
+      width: 100%;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border-dim);
+      border-radius: var(--radius-full);
+      padding: .6rem var(--space-4) .6rem 2.5rem;
+      font-size: var(--text-sm);
+      color: var(--color-text-primary);
+      outline: none;
+      transition: border-color var(--duration-fast);
+    }
+
+    .rail-search input:focus { border-color: var(--color-gold); }
+    .rail-search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--color-text-muted); }
+
+    .rail-card { background: var(--color-surface-2); border: 1px solid var(--color-border-dim); border-radius: var(--radius-lg); padding: var(--space-4); }
+    .rail-card__title { font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700; margin-bottom: var(--space-4); }
+
+    /* Live scores widget */
+    .live-score-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-border-dim);
+      cursor: pointer;
+    }
+
+    .live-score-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .live-score-row:first-child { padding-top: 0; }
+
+    .live-score-teams { font-size: var(--text-sm); font-weight: 600; }
+    .live-score-sub { font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 2px; }
+    .live-score-val { font-family: var(--font-display); font-size: var(--text-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+
+    /* Suggested creators */
+    .suggest-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+    }
+
+    .suggest-info { flex: 1; min-width: 0; }
+    .suggest-name { font-size: var(--text-sm); font-weight: 600; display: flex; align-items: center; gap: 3px; }
+    .suggest-sub { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+    .follow-btn {
+      padding: 5px 14px;
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      background: var(--color-surface-3);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-primary);
+      transition: all var(--duration-fast);
+      flex-shrink: 0;
+    }
+
+    .follow-btn:hover { border-color: var(--color-gold); color: var(--color-gold); }
+    .follow-btn.following { background: var(--color-gold); color: var(--color-text-inverse); border-color: var(--color-gold); }
+
+    /* Trending hashtags */
+    .trend-row { padding: var(--space-2) 0; cursor: pointer; }
+    .trend-tag { font-size: var(--text-sm); font-weight: 600; color: var(--color-text-primary); }
+    .trend-count { font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 1px; }
+
+    .rail-footer-links {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      line-height: 2;
+    }
+
+    .rail-footer-links a { color: var(--color-text-muted); }
+    .rail-footer-links a:hover { color: var(--color-text-secondary); text-decoration: underline; }
+
+    /* ---- Mobile bottom nav ---- */
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(13,13,13,.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--color-border-dim);
+      padding: var(--space-2) var(--space-4);
+      justify-content: space-around;
+      align-items: center;
+      z-index: 50;
+    }
+
+    .mobile-nav-link { padding: var(--space-2); color: var(--color-text-muted); }
+    .mobile-nav-link.active { color: var(--color-gold); }
+    .mobile-nav-link svg { width: 24px; height: 24px; stroke-width: 1.75; }
+
+    /* ---- Composer Modal ---- */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      align-items: flex-start;
+      justify-content: center;
+      padding: var(--space-10) var(--space-4);
+      overflow-y: auto;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-elevated);
+    }
+
+    .modal__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-5);
+      border-bottom: 1px solid var(--color-border-dim);
+    }
+
+    .modal__title { font-family: var(--font-display); font-size: var(--text-md); font-weight: 700; }
+    .modal__close { color: var(--color-text-muted); padding: 6px; border-radius: var(--radius-md); transition: all var(--duration-fast); }
+    .modal__close:hover { background: var(--color-surface-3); color: var(--color-text-primary); }
+
+    .modal__body { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+
+    .modal__textarea {
+      width: 100%;
+      min-height: 90px;
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      color: var(--color-text-primary);
+      font-size: var(--text-md);
+      font-family: inherit;
+    }
+
+    .modal__textarea::placeholder { color: var(--color-text-muted); }
+
+    .modal__field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+
+    .modal__premium-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-gold-subtle);
+      border: 1px solid rgba(212,175,55,.2);
+      border-radius: var(--radius-md);
+    }
+
+    .toggle-switch { position: relative; width: 40px; height: 22px; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: var(--color-surface-4); border-radius: 999px; cursor: pointer; transition: background var(--duration-fast); }
+    .toggle-slider::before { content: ''; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: transform var(--duration-fast); }
+    .toggle-switch input:checked + .toggle-slider { background: var(--color-gold); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    .modal__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-5);
+      border-top: 1px solid var(--color-border-dim);
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 1200px) {
+      .app-shell { grid-template-columns: 80px 1fr var(--right-rail-width); }
+      .sidebar-link span:not(.sidebar-link__badge), .sidebar__logo span, .sidebar-create-btn span, .sidebar-user__info { display: none; }
+      .sidebar-link { justify-content: center; }
+      .sidebar-create-btn { padding: .75rem; }
+      .sidebar-user { justify-content: center; }
+    }
+
+    @media (max-width: 1000px) {
+      .app-shell { grid-template-columns: 80px 1fr; }
+      .right-rail { display: none; }
+    }
+
+    @media (max-width: 700px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .mobile-nav { display: flex; }
+      .feed-main { border-right: none; padding-bottom: 70px; }
+      .post__game-teams { gap: var(--space-2); }
+    }
+  
+  </style>
+
 </head>
 <body>
 
   <!-- ============================================================
+       PAGE: LANDING
+       ============================================================ -->
+  <div id="page-landing">
+<!-- ============================================================
        NAVIGATION
        ============================================================ -->
   <nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
     <div class="nav__inner">
-      <a href="#" class="nav__logo" aria-label="BetX home">
+      <a href="#" onclick="goToPage('landing');return false;" class="nav__logo" aria-label="BetX home">
         <div class="nav__logo-mark">B</div>
         <span class="nav__logo-text">BetX</span>
       </a>
@@ -1948,8 +3185,8 @@
       </div>
 
       <div class="nav__actions">
-        <a href="#" class="btn btn--outline btn--sm">Sign In</a>
-        <a href="#" class="btn btn--primary btn--sm">Join BetX</a>
+        <a href="#" onclick="goToPage('login');return false;" class="btn btn--outline btn--sm">Sign In</a>
+        <a href="#" onclick="goToPage('register');return false;" class="btn btn--primary btn--sm">Join BetX</a>
       </div>
 
       <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
@@ -1966,8 +3203,8 @@
     <a href="#pricing" class="nav__mobile-link">Pricing</a>
     <a href="#faq" class="nav__mobile-link">FAQ</a>
     <div style="display:flex;gap:12px;padding-top:8px;">
-      <a href="#" class="btn btn--outline" style="flex:1;justify-content:center;">Sign In</a>
-      <a href="#" class="btn btn--primary" style="flex:1;justify-content:center;">Join BetX</a>
+      <a href="#" onclick="goToPage('login');return false;" class="btn btn--outline" style="flex:1;justify-content:center;">Sign In</a>
+      <a href="#" onclick="goToPage('register');return false;" class="btn btn--primary" style="flex:1;justify-content:center;">Join BetX</a>
     </div>
   </div>
 
@@ -1995,7 +3232,7 @@
           </p>
 
           <div class="hero__actions">
-            <a href="#" class="btn btn--primary btn--lg">Join BetX Free</a>
+            <a href="#" onclick="goToPage('register');return false;" class="btn btn--primary btn--lg">Join BetX Free</a>
             <a href="#picks" class="btn btn--outline btn--lg">Explore Picks</a>
           </div>
 
@@ -3049,7 +4286,7 @@
             Join 24,000+ bettors already building their brand and sharing picks on BetX. It's free to start — no credit card required.
           </p>
           <div class="hero__actions" style="justify-content:center;margin-bottom:var(--space-6);">
-            <a href="#" class="btn btn--primary btn--lg">Create Your Free Account</a>
+            <a href="#" onclick="goToPage('register');return false;" class="btn btn--primary btn--lg">Create Your Free Account</a>
             <a href="#features" class="btn btn--outline btn--lg">Learn More</a>
           </div>
           <p style="font-size:var(--text-xs);color:var(--color-text-muted);">No sportsbook account needed &nbsp;·&nbsp; Free to join &nbsp;·&nbsp; No credit card</p>
@@ -3135,7 +4372,943 @@
   <!-- ============================================================
        JAVASCRIPT
        ============================================================ -->
+  </div>
+
+  <!-- ============================================================
+       PAGE: LOGIN
+       ============================================================ -->
+  <div id="page-login">
+<div class="auth-page">
+
+  <!-- LEFT — Visual panel -->
+  <div class="auth-visual">
+    <div class="auth-visual__top">
+      <a href="#" onclick="goToPage('landing');return false;" class="logo">
+        <div class="logo-mark">B</div>
+        <span class="logo-text">BetX</span>
+      </a>
+    </div>
+
+    <div class="auth-visual__content">
+      <h2 class="auth-visual__heading">
+        The sharpest<br>bettors are<br>already <em>inside.</em>
+      </h2>
+      <p class="auth-visual__sub">
+        Share your picks. Track your record. Build an audience that pays you for your expertise.
+      </p>
+
+      <div class="auth-stats">
+        <div>
+          <div class="auth-stat__val auth-stat__val--gold">24K+</div>
+          <div class="auth-stat__label">Active bettors</div>
+        </div>
+        <div>
+          <div class="auth-stat__val">1.2M</div>
+          <div class="auth-stat__label">Picks tracked</div>
+        </div>
+        <div>
+          <div class="auth-stat__val auth-stat__val--gold">340+</div>
+          <div class="auth-stat__label">Verified creators</div>
+        </div>
+      </div>
+
+      <div class="auth-testimonial">
+        <p class="auth-testimonial__quote">
+          "I was posting picks on Twitter for free. Switched to BetX and now I have 800 subscribers at $20/month. The verified track record feature is what makes it work."
+        </p>
+        <div class="auth-testimonial__author">
+          <div class="avatar-placeholder" style="width:36px;height:36px;background:linear-gradient(135deg,#001a0a,#004d20);color:#22C55E;font-weight:800;">MR</div>
+          <div>
+            <div class="auth-testimonial__name">Marco R. — GoalLine Guru ✦</div>
+            <div class="auth-testimonial__tag">71.1% win rate · $16K/mo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-visual__bottom">
+      © 2025 BetX Inc. &nbsp;·&nbsp; BetX is not a sportsbook. Gamble responsibly.
+    </div>
+  </div>
+
+  <!-- RIGHT — Form panel -->
+  <div class="auth-form-panel">
+    <div class="auth-form-panel__top">
+      <a href="#" onclick="goToPage('landing');return false;" class="auth-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Back to BetX
+      </a>
+      <!-- Mobile logo only -->
+      <a href="#" onclick="goToPage('landing');return false;" class="logo" style="display:none;" id="login-mobileLogo">
+        <div class="logo-mark">B</div>
+        <span class="logo-text">BetX</span>
+      </a>
+    </div>
+
+    <h1 class="auth-form__title">Welcome back</h1>
+    <p class="auth-form__subtitle">
+      New to BetX? <a href="#" onclick="goToPage('register');return false;">Create a free account →</a>
+    </p>
+
+    <!-- OAuth -->
+    <div class="oauth-row">
+      <button class="oauth-btn" onclick="handleOAuth('Google')">
+        <span class="oauth-btn__icon">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        </span>
+        Continue with Google
+      </button>
+      <button class="oauth-btn" onclick="handleOAuth('Apple')">
+        <span class="oauth-btn__icon" style="font-size:18px;line-height:1;color:#fff;">
+          <!-- Apple SVG -->
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.4c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4zm-3.1-17.5c.06 2.26-1.64 3.95-3.82 3.76-.31-1.97 1.49-3.97 3.82-3.76z"/></svg>
+        </span>
+        Continue with Apple
+      </button>
+    </div>
+
+    <div class="divider--text" style="margin-bottom:var(--space-6);">
+      <span>or sign in with email</span>
+    </div>
+
+    <!-- Alert -->
+    <div class="auth-alert" id="loginAlert">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <span id="loginAlertText">Invalid email or password.</span>
+    </div>
+
+    <form class="auth-form" id="loginForm" novalidate>
+      <div class="field">
+        <label class="field__label" for="login-email">Email address</label>
+        <input class="field__input" id="login-email" name="email" type="email" placeholder="you@example.com" autocomplete="email" />
+        <span class="field__error" id="login-emailError" style="display:none;"></span>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="login-password">Password</label>
+        <div class="field__wrap">
+          <input class="field__input" id="login-password" name="password" type="password" placeholder="••••••••" autocomplete="current-password" />
+          <button type="button" class="field__eye" id="login-togglePwd" aria-label="Show password">
+            <svg id="login-eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+        </div>
+        <span class="field__error" id="login-passwordError" style="display:none;"></span>
+      </div>
+
+      <div class="form-row-inline">
+        <label class="checkbox-label">
+          <input type="checkbox" id="rememberMe" name="remember" />
+          Remember me
+        </label>
+        <a href="forgot-password.html" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <div class="auth-form__cta">
+        <button type="submit" class="btn btn--primary btn--full btn--lg" id="loginBtn">
+          <span id="loginBtnText">Sign In</span>
+          <svg id="loginSpinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;animation:spin .8s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+        </button>
+      </div>
+    </form>
+
+    <div class="auth-form__footer" style="margin-top:var(--space-8);">
+      Don't have an account? <a href="#" onclick="goToPage('register');return false;">Join BetX free</a>
+    </div>
+
+    <div style="margin-top:var(--space-6);padding-top:var(--space-6);border-top:1px solid var(--color-border-dim);text-align:center;">
+      <p style="font-size:var(--text-xs);color:var(--color-text-muted);line-height:1.6;">
+        By signing in, you agree to our <a href="#" style="color:var(--color-text-muted);text-decoration:underline;">Terms of Service</a> and <a href="#" style="color:var(--color-text-muted);text-decoration:underline;">Privacy Policy</a>.<br>
+        BetX is not a sportsbook. Gamble responsibly.
+      </p>
+    </div>
+  </div>
+</div>
+  </div>
+
+  <!-- ============================================================
+       PAGE: REGISTER
+       ============================================================ -->
+  <div id="page-register">
+<div class="auth-page">
+
+  <!-- LEFT — Visual panel -->
+  <div class="auth-visual">
+    <div class="auth-visual__top">
+      <a href="#" onclick="goToPage('landing');return false;" class="logo">
+        <div class="logo-mark">B</div>
+        <span class="logo-text">BetX</span>
+      </a>
+    </div>
+
+    <div class="auth-visual__content">
+      <h2 class="auth-visual__heading">
+        Turn your picks<br>into a real<br><em>income.</em>
+      </h2>
+      <p class="auth-visual__sub">
+        Join the platform where sports bettors build verified track records and get paid for their expertise.
+      </p>
+
+      <div class="benefit-list">
+        <div class="benefit-item">
+          <div class="benefit-icon">📊</div>
+          <div class="benefit-text">
+            <div class="benefit-text__title">Verified track record</div>
+            <div class="benefit-text__sub">Every pick logged permanently — full transparency, no faking results</div>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon">💰</div>
+          <div class="benefit-text">
+            <div class="benefit-text__title">Monetize your picks</div>
+            <div class="benefit-text__sub">Charge subscriptions or sell individual picks to your followers</div>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon">🌐</div>
+          <div class="benefit-text">
+            <div class="benefit-text__title">Any sportsbook</div>
+            <div class="benefit-text__sub">BetX is sportsbook-independent — connect from anywhere</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="earnings-card">
+        <div class="earnings-card__label">Top Creator Earnings This Month</div>
+        <div class="earnings-card__row">
+          <div class="earnings-card__name">🦅 SharpAce <span class="v-icon">✦</span></div>
+          <div class="earnings-card__val">$18,420</div>
+        </div>
+        <div class="earnings-card__row">
+          <div class="earnings-card__name">⚽ GoalLine Guru <span class="v-icon">✦</span></div>
+          <div class="earnings-card__val">$16,050</div>
+        </div>
+        <div class="earnings-card__row">
+          <div class="earnings-card__name">🎾 AceTennisEdge <span class="v-icon">✦</span></div>
+          <div class="earnings-card__val">$9,830</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-visual__bottom">
+      © 2025 BetX Inc. &nbsp;·&nbsp; BetX is not a sportsbook. Gamble responsibly.
+    </div>
+  </div>
+
+  <!-- RIGHT — Form panel -->
+  <div class="auth-form-panel">
+    <div class="auth-form-panel__top">
+      <a href="#" onclick="goToPage('landing');return false;" class="auth-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Back to BetX
+      </a>
+      <a href="#" onclick="goToPage('landing');return false;" class="logo" style="display:none;" id="register-mobileLogo">
+        <div class="logo-mark">B</div>
+        <span class="logo-text">BetX</span>
+      </a>
+    </div>
+
+    <h1 class="auth-form__title">Create your account</h1>
+    <p class="auth-form__subtitle">
+      Already on BetX? <a href="#" onclick="goToPage('login');return false;">Sign in →</a>
+    </p>
+
+    <div class="oauth-row">
+      <button class="oauth-btn" onclick="handleOAuth('Google')">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Google
+      </button>
+      <button class="oauth-btn" onclick="handleOAuth('Apple')">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.4c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4zm-3.1-17.5c.06 2.26-1.64 3.95-3.82 3.76-.31-1.97 1.49-3.97 3.82-3.76z"/></svg>
+        Apple
+      </button>
+    </div>
+
+    <div class="divider--text" style="margin-bottom:var(--space-6);">
+      <span>or sign up with email</span>
+    </div>
+
+    <div class="auth-alert" id="registerAlert">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <span id="registerAlertText">Something went wrong. Please check the form.</span>
+    </div>
+
+    <form class="auth-form" id="registerForm" novalidate>
+
+      <div class="name-row">
+        <div class="field">
+          <label class="field__label" for="fullName">Full name</label>
+          <input class="field__input" id="fullName" name="fullName" type="text" placeholder="Jordan Lee" autocomplete="name" />
+          <span class="field__error" id="fullNameError" style="display:none;"></span>
+        </div>
+        <div class="field">
+          <label class="field__label" for="username">Username</label>
+          <div class="field__wrap">
+            <input class="field__input" id="username" name="username" type="text" placeholder="jordanbets" autocomplete="username" />
+            <span class="username-status" id="usernameStatus"></span>
+          </div>
+          <span class="field__error" id="usernameError" style="display:none;"></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="register-email">Email address</label>
+        <input class="field__input" id="register-email" name="email" type="email" placeholder="you@example.com" autocomplete="email" />
+        <span class="field__error" id="register-emailError" style="display:none;"></span>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="register-password">Password</label>
+        <div class="field__wrap">
+          <input class="field__input" id="register-password" name="password" type="password" placeholder="Create a password" autocomplete="new-password" />
+          <button type="button" class="field__eye" id="register-togglePwd" aria-label="Show password">
+            <svg id="register-eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+        </div>
+        <div class="strength-meter" id="strengthMeter">
+          <div class="strength-bar"></div><div class="strength-bar"></div><div class="strength-bar"></div><div class="strength-bar"></div>
+        </div>
+        <div class="strength-label" id="strengthLabel">Use 8+ characters with a mix of letters & numbers</div>
+        <span class="field__error" id="register-passwordError" style="display:none;"></span>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="confirmPassword">Confirm password</label>
+        <input class="field__input" id="confirmPassword" name="confirmPassword" type="password" placeholder="Re-enter your password" autocomplete="new-password" />
+        <span class="field__error" id="confirmPasswordError" style="display:none;"></span>
+      </div>
+
+      <label class="checkbox-label">
+        <input type="checkbox" id="agreeTerms" name="agreeTerms" />
+        <span>I agree to BetX's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I confirm I am 18+ and understand BetX is not a sportsbook.</span>
+      </label>
+
+      <div class="auth-form__cta">
+        <button type="submit" class="btn btn--primary btn--full btn--lg" id="registerBtn">
+          <span id="registerBtnText">Create Free Account</span>
+          <svg id="registerSpinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;animation:spin .8s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+        </button>
+      </div>
+    </form>
+
+    <div class="auth-form__footer">
+      Already have an account? <a href="#" onclick="goToPage('login');return false;">Sign in</a>
+    </div>
+  </div>
+</div>
+  </div>
+
+  <!-- ============================================================
+       PAGE: FEED
+       ============================================================ -->
+  <div id="page-feed">
+<div class="app-shell">
+
+  <!-- ============================================================
+       LEFT SIDEBAR
+       ============================================================ -->
+  <aside class="sidebar">
+    <div class="sidebar__top">
+      <a href="#" onclick="goToPage('landing');return false;" class="sidebar__logo">
+        <div class="logo-mark">B</div>
+        <span class="logo-text">BetX</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="#" onclick="goToPage('feed');return false;" class="sidebar-link active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>Home</span>
+        </a>
+        <a href="#" class="sidebar-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>Explore</span>
+        </a>
+        <a href="#" class="sidebar-link" id="openComposerLink">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          <span>Create</span>
+        </a>
+        <a href="#" class="sidebar-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          <span>Messages</span>
+          <span class="sidebar-link__badge">3</span>
+        </a>
+        <a href="#" class="sidebar-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          <span>Notifications</span>
+          <span class="sidebar-link__badge">12</span>
+        </a>
+        <a href="#" class="sidebar-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span>Profile</span>
+        </a>
+        <a href="#" class="sidebar-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <button class="sidebar-create-btn" id="openComposerBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <span>New Pick</span>
+      </button>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#1a1a00,#3d3d00);color:#FBBF24;font-weight:800;">JL</div>
+      <div class="sidebar-user__info">
+        <div class="sidebar-user__name">Jordan Lee</div>
+        <div class="sidebar-user__handle">@jordanbets</div>
+      </div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-text-muted);flex-shrink:0;"><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+    </div>
+  </aside>
+
+  <!-- ============================================================
+       MAIN FEED
+       ============================================================ -->
+  <main class="feed-main">
+
+    <div class="feed-topbar">
+      <div class="feed-topbar__title">Home</div>
+      <div class="feed-tabs">
+        <button class="feed-tab active" data-tab="following">Following</button>
+        <button class="feed-tab" data-tab="trending">Trending</button>
+        <button class="feed-tab" data-tab="live">
+          <span style="width:6px;height:6px;background:var(--color-live);border-radius:50%;display:inline-block;"></span>
+          Live
+        </button>
+      </div>
+    </div>
+
+    <!-- Stories strip -->
+    <div class="stories-strip">
+      <div class="story-item">
+        <div class="story-avatar-ring">
+          <div class="story-avatar-inner">
+            <div class="story-avatar" style="background:linear-gradient(135deg,#1a0a2e,#3d1a6e);color:var(--color-gold);">SA</div>
+          </div>
+        </div>
+        <div class="story-name">SharpAce</div>
+      </div>
+      <div class="story-item">
+        <div class="story-avatar-ring">
+          <div class="story-avatar-inner">
+            <div class="story-avatar" style="background:linear-gradient(135deg,#001a0a,#004d20);color:#22C55E;">GG</div>
+          </div>
+        </div>
+        <div class="story-name">GoalLine</div>
+      </div>
+      <div class="story-item">
+        <div class="story-avatar-ring story-avatar-ring--seen">
+          <div class="story-avatar-inner">
+            <div class="story-avatar" style="background:linear-gradient(135deg,#0a1a2e,#1a3a6e);color:#60A5FA;">DD</div>
+          </div>
+        </div>
+        <div class="story-name">DiamondD</div>
+      </div>
+      <div class="story-item">
+        <div class="story-avatar-ring">
+          <div class="story-avatar-inner">
+            <div class="story-avatar" style="background:linear-gradient(135deg,#1a0a00,#4d2000);color:#FB923C;">IC</div>
+          </div>
+        </div>
+        <div class="story-name">IceCaps</div>
+      </div>
+      <div class="story-item">
+        <div class="story-avatar-ring story-avatar-ring--seen">
+          <div class="story-avatar-inner">
+            <div class="story-avatar" style="background:linear-gradient(135deg,#1a1a00,#3d3d00);color:#FBBF24;">VK</div>
+          </div>
+        </div>
+        <div class="story-name">ValueKing</div>
+      </div>
+      <div class="story-item">
+        <div class="story-avatar-ring">
+          <div class="story-avatar-inner">
+            <div class="story-avatar" style="background:linear-gradient(135deg,#1a001a,#4d004d);color:#C084FC;">AT</div>
+          </div>
+        </div>
+        <div class="story-name">AceTennis</div>
+      </div>
+      <div class="story-item">
+        <div class="story-avatar-ring story-avatar-ring--seen">
+          <div class="story-avatar-inner">
+            <div class="story-avatar" style="background:var(--color-surface-4);color:var(--color-text-secondary);">RH</div>
+          </div>
+        </div>
+        <div class="story-name">RinkHawk</div>
+      </div>
+    </div>
+
+    <!-- Composer prompt -->
+    <div class="composer-prompt">
+      <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#1a1a00,#3d3d00);color:#FBBF24;font-weight:800;">JL</div>
+      <div class="composer-input" id="composerPrompt">Share a pick or start a discussion...</div>
+    </div>
+
+    <!-- ============================================================
+         FEED POSTS
+         ============================================================ -->
+    <div class="feed-posts" id="feedPosts">
+
+      <!-- POST 1 — Free pick, live -->
+      <article class="post">
+        <div class="post__header">
+          <div class="post__user">
+            <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#1a0a2e,#3d1a6e);color:var(--color-gold);font-weight:800;">SA</div>
+            <div>
+              <div class="post__username">SharpAce <span class="v-icon">✦</span></div>
+              <div class="post__meta">68.3% W/L &nbsp;·&nbsp; 12m ago</div>
+            </div>
+          </div>
+          <button class="post__more">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+          </button>
+        </div>
+
+        <div class="post__game-card">
+          <div class="post__game-top">
+            <span class="post__game-league">🏈 NFL · Week 14</span>
+            <span class="badge badge--live"><span class="live-dot"></span>LIVE · Q3</span>
+          </div>
+          <div class="post__game-teams">
+            <div class="post__team"><div class="post__team-icon">🏈</div><div class="post__team-name">Chiefs</div></div>
+            <div class="post__vs">21–17</div>
+            <div class="post__team"><div class="post__team-icon">🦅</div><div class="post__team-name">Ravens</div></div>
+          </div>
+          <div class="post__bet-line">
+            <div><div class="post__bet-type">Spread</div><div class="post__bet-pick">Chiefs -3.5</div></div>
+            <div class="post__bet-odds">-108</div>
+          </div>
+        </div>
+
+        <div class="post__tags">
+          <span class="tag">🏈 NFL</span>
+          <span class="tag">Spread</span>
+          <span class="tag">DraftKings</span>
+          <span class="tag">2u</span>
+        </div>
+
+        <p class="post__caption">Mahomes locked in tonight, defense holding strong. Line already moved to -4 on some books — get in before it shifts further. Confidence: 82%</p>
+
+        <div class="post__footer">
+          <div class="post__actions">
+            <button class="post__act like-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              <span class="count">381</span>
+            </button>
+            <button class="post__act">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <span class="count">94</span>
+            </button>
+            <button class="post__act">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            </button>
+          </div>
+          <button class="post__act save-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+          </button>
+        </div>
+      </article>
+
+      <!-- POST 2 — Premium locked -->
+      <article class="post">
+        <div class="post__header">
+          <div class="post__user">
+            <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#001a0a,#004d20);color:#22C55E;font-weight:800;">GG</div>
+            <div>
+              <div class="post__username">GoalLine Guru <span class="v-icon">✦</span></div>
+              <div class="post__meta">71.1% W/L &nbsp;·&nbsp; 1h ago</div>
+            </div>
+          </div>
+          <button class="post__more">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+          </button>
+        </div>
+
+        <div class="post__game-card">
+          <div class="post__game-top">
+            <span class="post__game-league">⚽ Champions League</span>
+            <span class="badge badge--premium">🔒 PREMIUM</span>
+          </div>
+          <div class="post__game-teams">
+            <div class="post__team"><div class="post__team-icon">⚽</div><div class="post__team-name">Man City</div></div>
+            <div class="post__vs">Tomorrow, 3PM ET</div>
+            <div class="post__team"><div class="post__team-icon">⚪</div><div class="post__team-name">Real Madrid</div></div>
+          </div>
+          <div class="post__bet-line" style="filter:blur(5px);user-select:none;">
+            <div><div class="post__bet-type">Total Goals</div><div class="post__bet-pick">████████</div></div>
+            <div class="post__bet-odds">████</div>
+          </div>
+        </div>
+
+        <div class="post__premium-lock">
+          <div class="post__premium-lock-icon">🔒</div>
+          <div class="post__premium-lock-text">Subscribe to GoalLine Guru to unlock this pick</div>
+          <button class="btn btn--primary btn--sm">Subscribe · $15/mo</button>
+        </div>
+
+        <p class="post__caption post__caption--blur">Real Madrid's away record in UCL knockouts speaks for itself this season. Their backup striker has struggled scoring against high press teams and I see real value on the...</p>
+
+        <div class="post__footer">
+          <div class="post__actions">
+            <button class="post__act like-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              <span class="count">506</span>
+            </button>
+            <button class="post__act">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <span class="count">38</span>
+            </button>
+            <button class="post__act">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            </button>
+          </div>
+          <button class="post__act save-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+          </button>
+        </div>
+      </article>
+
+      <!-- POST 3 — Media post (highlight) -->
+      <article class="post">
+        <div class="post__header">
+          <div class="post__user">
+            <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#1a0a00,#4d2000);color:#FB923C;font-weight:800;">IC</div>
+            <div>
+              <div class="post__username">IceCapsPicks</div>
+              <div class="post__meta">63.8% W/L &nbsp;·&nbsp; 3h ago</div>
+            </div>
+          </div>
+          <button class="post__more">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+          </button>
+        </div>
+
+        <p class="post__caption" style="margin-bottom:var(--space-3);">McDavid's OT winner last night was absolutely filthy. This is exactly why I rode the puck line at +140 🔥</p>
+
+        <div class="post__media">
+          <span style="opacity:.3;">🏒</span>
+          <div class="post__media-play">▶</div>
+        </div>
+
+        <div class="post__tags">
+          <span class="tag">🏒 NHL</span>
+          <span class="tag">Highlight</span>
+        </div>
+
+        <div class="post__footer">
+          <div class="post__actions">
+            <button class="post__act like-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              <span class="count">892</span>
+            </button>
+            <button class="post__act">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <span class="count">156</span>
+            </button>
+            <button class="post__act">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            </button>
+          </div>
+          <button class="post__act save-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+          </button>
+        </div>
+      </article>
+
+      <!-- POST 4 — Win result -->
+      <article class="post">
+        <div class="post__header">
+          <div class="post__user">
+            <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#0a1a2e,#1a3a6e);color:#60A5FA;font-weight:800;">DD</div>
+            <div>
+              <div class="post__username">DiamondDegen</div>
+              <div class="post__meta">59.2% W/L &nbsp;·&nbsp; 5h ago</div>
+            </div>
+          </div>
+          <button class="post__more">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+          </button>
+        </div>
+
+        <div class="post__game-card">
+          <div class="post__game-top">
+            <span class="post__game-league">⚾ MLB · Final</span>
+            <span class="badge badge--win">✓ WIN</span>
+          </div>
+          <div class="post__game-teams">
+            <div class="post__team"><div class="post__team-icon">⚾</div><div class="post__team-name">Dodgers</div></div>
+            <div class="post__vs">6–2</div>
+            <div class="post__team"><div class="post__team-icon">🟤</div><div class="post__team-name">Padres</div></div>
+          </div>
+          <div class="post__bet-line">
+            <div><div class="post__bet-type">Run Line</div><div class="post__bet-pick">Dodgers -1.5</div></div>
+            <div class="post__bet-odds" style="color:var(--color-win);">+125</div>
+          </div>
+        </div>
+
+        <div class="post__tags">
+          <span class="tag">⚾ MLB</span>
+          <span class="tag">Run Line</span>
+          <span class="tag">FanDuel</span>
+          <span class="tag" style="color:var(--color-win);border-color:rgba(34,197,94,.3);">+1.25u</span>
+        </div>
+
+        <p class="post__caption">Called it — Ohtani made a statement at home. Run line cashed easy, exactly as I drew it up.</p>
+
+        <div class="post__footer">
+          <div class="post__actions">
+            <button class="post__act like-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              <span class="count">728</span>
+            </button>
+            <button class="post__act">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <span class="count">143</span>
+            </button>
+            <button class="post__act">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            </button>
+          </div>
+          <button class="post__act save-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+          </button>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Skeleton loaders shown while "loading more" -->
+    <div id="skeletonLoader" style="display:none;">
+      <div class="post-skeleton">
+        <div class="skel-row">
+          <div class="skeleton skel-avatar"></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+            <div class="skeleton skel-line" style="width:120px;"></div>
+            <div class="skeleton skel-line" style="width:80px;height:8px;"></div>
+          </div>
+        </div>
+        <div class="skeleton" style="height:120px;border-radius:12px;margin-bottom:16px;"></div>
+        <div class="skeleton skel-line" style="width:100%;margin-bottom:8px;"></div>
+        <div class="skeleton skel-line" style="width:70%;"></div>
+      </div>
+    </div>
+
+    <div class="feed-end" id="feedEnd">
+      You're all caught up 🎉 &nbsp;·&nbsp; Check back later for new picks
+    </div>
+  </main>
+
+  <!-- ============================================================
+       RIGHT RAIL
+       ============================================================ -->
+  <aside class="right-rail">
+
+    <div class="rail-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="text" placeholder="Search BetX" />
+    </div>
+
+    <!-- Live scores -->
+    <div class="rail-card">
+      <div class="rail-card__title">🔴 Live Scores</div>
+      <div class="live-score-row">
+        <div>
+          <div class="live-score-teams">KC vs BAL</div>
+          <div class="live-score-sub">Q3 · 8:42</div>
+        </div>
+        <div class="live-score-val">21–17</div>
+      </div>
+      <div class="live-score-row">
+        <div>
+          <div class="live-score-teams">ARS vs CHE</div>
+          <div class="live-score-sub">HT</div>
+        </div>
+        <div class="live-score-val">1–1</div>
+      </div>
+      <div class="live-score-row">
+        <div>
+          <div class="live-score-teams">EDM vs COL</div>
+          <div class="live-score-sub">OT</div>
+        </div>
+        <div class="live-score-val">3–3</div>
+      </div>
+    </div>
+
+    <!-- Suggested creators -->
+    <div class="rail-card">
+      <div class="rail-card__title">Suggested for You</div>
+      <div class="suggest-row">
+        <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#1a1a00,#3d3d00);color:#FBBF24;font-weight:800;">VK</div>
+        <div class="suggest-info">
+          <div class="suggest-name">ValueKing_88 <span class="v-icon">✦</span></div>
+          <div class="suggest-sub">65.0% · NFL · CFB</div>
+        </div>
+        <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+      </div>
+      <div class="suggest-row">
+        <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#1a001a,#4d004d);color:#C084FC;font-weight:800;">AT</div>
+        <div class="suggest-info">
+          <div class="suggest-name">AceTennisEdge <span class="v-icon">✦</span></div>
+          <div class="suggest-sub">73.2% · ATP · WTA</div>
+        </div>
+        <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+      </div>
+      <div class="suggest-row">
+        <div class="avatar-placeholder avatar--md" style="background:var(--color-surface-4);color:var(--color-text-secondary);font-weight:800;">RH</div>
+        <div class="suggest-info">
+          <div class="suggest-name">RinkHawk</div>
+          <div class="suggest-sub">57.4% · NHL</div>
+        </div>
+        <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+      </div>
+      <a href="#" style="display:block;margin-top:var(--space-2);font-size:var(--text-sm);color:var(--color-gold);font-weight:600;">See more</a>
+    </div>
+
+    <!-- Trending -->
+    <div class="rail-card">
+      <div class="rail-card__title">Trending</div>
+      <div class="trend-row"><div class="trend-tag">#MNF</div><div class="trend-count">12.4K picks</div></div>
+      <div class="trend-row"><div class="trend-tag">#ChampionsLeague</div><div class="trend-count">8.1K picks</div></div>
+      <div class="trend-row"><div class="trend-tag">#PlayoffPush</div><div class="trend-count">5.6K picks</div></div>
+      <div class="trend-row"><div class="trend-tag">#PropBets</div><div class="trend-count">4.2K picks</div></div>
+    </div>
+
+    <div class="rail-footer-links">
+      <a href="#" onclick="goToPage('landing');setTimeout(()=>document.getElementById('features').scrollIntoView(),50);return false;">About</a> · <a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Support</a> · <a href="#">Careers</a><br>
+      © 2025 BetX Inc.
+    </div>
+  </aside>
+</div>
+
+<!-- ============================================================
+     MOBILE BOTTOM NAV
+     ============================================================ -->
+<nav class="mobile-nav">
+  <a href="#" onclick="goToPage('feed');return false;" class="mobile-nav-link active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+  </a>
+  <a href="#" class="mobile-nav-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+  </a>
+  <a href="#" class="mobile-nav-link" id="mobileComposerBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+  </a>
+  <a href="#" class="mobile-nav-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg>
+  </a>
+  <a href="#" class="mobile-nav-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+  </a>
+</nav>
+
+<!-- ============================================================
+     CREATE PICK MODAL (Phase 2 stub — full builder in Phase 3)
+     ============================================================ -->
+<div class="modal-overlay" id="composerModal">
+  <div class="modal">
+    <div class="modal__header">
+      <div class="modal__title">Create a Post</div>
+      <button class="modal__close" id="closeComposer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="modal__body">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#1a1a00,#3d3d00);color:#FBBF24;font-weight:800;">JL</div>
+        <textarea class="modal__textarea" placeholder="What's your pick? Share your analysis..."></textarea>
+      </div>
+
+      <div class="modal__field-row">
+        <div class="field">
+          <label class="field__label">Sport</label>
+          <select class="field__input">
+            <option>🏈 NFL</option>
+            <option>🏀 NBA</option>
+            <option>⚾ MLB</option>
+            <option>🏒 NHL</option>
+            <option>⚽ Soccer</option>
+            <option>🎾 Tennis</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field__label">Sportsbook</label>
+          <select class="field__input">
+            <option>DraftKings</option>
+            <option>FanDuel</option>
+            <option>Bet365</option>
+            <option>BetMGM</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal__field-row">
+        <div class="field">
+          <label class="field__label">Pick</label>
+          <input class="field__input" type="text" placeholder="e.g. Chiefs -3.5" />
+        </div>
+        <div class="field">
+          <label class="field__label">Odds</label>
+          <input class="field__input" type="text" placeholder="e.g. -110" />
+        </div>
+      </div>
+
+      <div class="modal__premium-toggle">
+        <div>
+          <div style="font-size:var(--text-sm);font-weight:600;color:var(--color-gold);">🔒 Make this Premium</div>
+          <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px;">Only subscribers will see the full pick</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="premiumToggle" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <p style="font-size:var(--text-xs);color:var(--color-text-muted);">Full pick builder with stake, units, confidence %, and media uploads is available in the next update.</p>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" id="cancelComposer">Cancel</button>
+      <button class="btn btn--primary">Post Pick</button>
+    </div>
+  </div>
+</div>
+  </div>
+
+
   <script>
+    // ============================================================
+    // ROUTER — switches between landing / login / register / feed
+    // ============================================================
+    const PAGES = ['landing', 'login', 'register', 'feed'];
+
+    function goToPage(pageName) {
+      if (!PAGES.includes(pageName)) return;
+      PAGES.forEach(p => {
+        const el = document.getElementById('page-' + p);
+        if (el) el.style.display = (p === pageName) ? 'block' : 'none';
+      });
+      window.scrollTo({ top: 0, behavior: 'instant' in document.documentElement.style ? 'instant' : 'auto' });
+      document.body.style.overflow = '';
+      // Update a simple hash so back/forward + refresh feel sane (optional, non-blocking)
+      try { history.replaceState(null, '', '#' + pageName); } catch (e) {}
+    }
+
+    // Restore page from URL hash on load (defaults to landing)
+    (function initRouter() {
+      const hash = window.location.hash.replace('#', '');
+      const initial = PAGES.includes(hash) ? hash : 'landing';
+      goToPage(initial);
+    })();
+
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.replace('#', '');
+      if (PAGES.includes(hash)) goToPage(hash);
+    });
+  </script>
+
+  <script>
+  (function() {
+
     // ---- Sticky nav ----
     const nav = document.getElementById('nav');
     const onScroll = () => {
@@ -3216,7 +5389,9 @@
     // ---- Smooth anchor scroll (handles nav height offset) ----
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function(e) {
-        const target = document.querySelector(this.getAttribute('href'));
+        const href = this.getAttribute('href');
+        if (!href || href === '#') return;
+        const target = document.querySelector(href);
         if (!target) return;
         e.preventDefault();
         const offset = 80;
@@ -3224,6 +5399,352 @@
         window.scrollTo({ top, behavior: 'smooth' });
       });
     });
+  
+  })();
   </script>
+
+  <script>
+  (function() {
+
+  // Mobile logo
+  if (window.innerWidth <= 900) {
+    document.getElementById('login-mobileLogo').style.display = 'flex';
+  }
+
+  // Password toggle
+  const pwdInput = document.getElementById('login-password');
+  const togglePwd = document.getElementById('login-togglePwd');
+  const eyeIcon = document.getElementById('login-eyeIcon');
+
+  togglePwd.addEventListener('click', () => {
+    const isHidden = pwdInput.type === 'password';
+    pwdInput.type = isHidden ? 'text' : 'password';
+    eyeIcon.innerHTML = isHidden
+      ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+  });
+
+  // Form validation + submit
+  const form = document.getElementById('loginForm');
+  const loginBtn = document.getElementById('loginBtn');
+  const loginBtnText = document.getElementById('loginBtnText');
+  const loginSpinner = document.getElementById('loginSpinner');
+  const loginAlert = document.getElementById('loginAlert');
+  const loginAlertText = document.getElementById('loginAlertText');
+
+  function showError(fieldId, errorId, msg) {
+    const field = document.getElementById(fieldId);
+    const error = document.getElementById(errorId);
+    field.classList.add('field__input--error');
+    error.textContent = msg;
+    error.style.display = 'block';
+  }
+
+  function clearErrors() {
+    ['login-email', 'login-password'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('field__input--error');
+    });
+    document.getElementById('login-emailError').style.display = 'none';
+    document.getElementById('login-passwordError').style.display = 'none';
+    loginAlert.classList.remove('visible');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearErrors();
+
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    let valid = true;
+
+    if (!email) { showError('login-email', 'login-emailError', 'Email is required.'); valid = false; }
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('login-email', 'login-emailError', 'Please enter a valid email address.'); valid = false; }
+    if (!password) { showError('login-password', 'login-passwordError', 'Password is required.'); valid = false; }
+    else if (password.length < 6) { showError('login-password', 'login-passwordError', 'Password must be at least 6 characters.'); valid = false; }
+
+    if (!valid) return;
+
+    // Simulate loading
+    loginBtn.disabled = true;
+    loginBtnText.textContent = 'Signing in...';
+    loginSpinner.style.display = 'block';
+
+    await new Promise(r => setTimeout(r, 1400));
+
+    // Demo: redirect to feed on any valid input
+    // In production: call your auth API here
+    if (email && password.length >= 6) {
+      goToPage('feed');
+    } else {
+      loginBtn.disabled = false;
+      loginBtnText.textContent = 'Sign In';
+      loginSpinner.style.display = 'none';
+      loginAlertText.textContent = 'Invalid email or password. Please try again.';
+      loginAlert.classList.add('visible');
+    }
+  });
+
+  function handleOAuth(provider) {
+    // Simulate OAuth redirect (Phase 2 demo)
+    const btn = event.currentTarget;
+    const orig = btn.innerHTML;
+    btn.innerHTML = `<span style="opacity:.6;font-size:13px;">Connecting to ${provider}...</span>`;
+    btn.disabled = true;
+    setTimeout(() => { goToPage('feed'); }, 1200);
+  }
+
+  // Inline focus feedback
+  document.querySelectorAll('.field__input').forEach(input => {
+    input.addEventListener('input', () => {
+      input.classList.remove('field__input--error');
+    });
+  });
+
+  })();
+  </script>
+
+  <script>
+  (function() {
+
+  if (window.innerWidth <= 900) {
+    document.getElementById('register-mobileLogo').style.display = 'flex';
+  }
+
+  // Password visibility toggle
+  const pwdInput = document.getElementById('register-password');
+  const togglePwd = document.getElementById('register-togglePwd');
+  const eyeIcon = document.getElementById('register-eyeIcon');
+  togglePwd.addEventListener('click', () => {
+    const isHidden = pwdInput.type === 'password';
+    pwdInput.type = isHidden ? 'text' : 'password';
+    eyeIcon.innerHTML = isHidden
+      ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+  });
+
+  // Password strength meter
+  const strengthBars = document.querySelectorAll('.strength-bar');
+  const strengthLabel = document.getElementById('strengthLabel');
+  const strengthColors = ['#EF4444', '#FB923C', '#FBBF24', '#22C55E'];
+  const strengthLabels = ['Weak', 'Fair', 'Good', 'Strong'];
+
+  function scorePassword(pwd) {
+    let score = 0;
+    if (pwd.length >= 8) score++;
+    if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
+    if (/\d/.test(pwd)) score++;
+    if (/[^A-Za-z0-9]/.test(pwd) && pwd.length >= 10) score++;
+    return score;
+  }
+
+  pwdInput.addEventListener('input', () => {
+    const val = pwdInput.value;
+    const score = val.length === 0 ? 0 : Math.max(1, scorePassword(val));
+    strengthBars.forEach((bar, i) => {
+      bar.style.background = i < score ? strengthColors[score - 1] : 'var(--color-surface-4)';
+    });
+    strengthLabel.textContent = val.length === 0
+      ? 'Use 8+ characters with a mix of letters & numbers'
+      : strengthLabels[score - 1] + ' password';
+    strengthLabel.style.color = val.length === 0 ? 'var(--color-text-muted)' : strengthColors[score - 1];
+  });
+
+  // Username availability simulation
+  const usernameInput = document.getElementById('username');
+  const usernameStatus = document.getElementById('usernameStatus');
+  const takenUsernames = ['sharpace', 'goallineguru', 'diamonddegen', 'admin', 'betx'];
+  let usernameTimer;
+
+  usernameInput.addEventListener('input', () => {
+    clearTimeout(usernameTimer);
+    const val = usernameInput.value.trim().toLowerCase();
+    if (!val) { usernameStatus.innerHTML = ''; return; }
+
+    usernameStatus.innerHTML = '<span class="username-status--checking">checking...</span>';
+    usernameTimer = setTimeout(() => {
+      if (takenUsernames.includes(val)) {
+        usernameStatus.innerHTML = '<span class="username-status--taken">✕ taken</span>';
+      } else if (val.length < 3) {
+        usernameStatus.innerHTML = '';
+      } else {
+        usernameStatus.innerHTML = '<span class="username-status--available">✓ available</span>';
+      }
+    }, 500);
+  });
+
+  // Form validation + submit
+  const form = document.getElementById('registerForm');
+  const registerBtn = document.getElementById('registerBtn');
+  const registerBtnText = document.getElementById('registerBtnText');
+  const registerSpinner = document.getElementById('registerSpinner');
+  const registerAlert = document.getElementById('registerAlert');
+  const registerAlertText = document.getElementById('registerAlertText');
+
+  function showError(fieldId, errorId, msg) {
+    const field = document.getElementById(fieldId);
+    const error = document.getElementById(errorId);
+    field.classList.add('field__input--error');
+    error.textContent = msg;
+    error.style.display = 'block';
+  }
+
+  function clearErrors() {
+    const fieldMap = {
+      fullName: 'fullNameError',
+      username: 'usernameError',
+      'register-email': 'register-emailError',
+      'register-password': 'register-passwordError',
+      confirmPassword: 'confirmPasswordError'
+    };
+    Object.keys(fieldMap).forEach(id => {
+      document.getElementById(id).classList.remove('field__input--error');
+      const err = document.getElementById(fieldMap[id]);
+      if (err) err.style.display = 'none';
+    });
+    registerAlert.classList.remove('visible');
+  }
+
+  document.querySelectorAll('.field__input').forEach(input => {
+    input.addEventListener('input', () => input.classList.remove('field__input--error'));
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearErrors();
+
+    const fullName = document.getElementById('fullName').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('register-email').value.trim();
+    const password = document.getElementById('register-password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const agreeTerms = document.getElementById('agreeTerms').checked;
+    let valid = true;
+
+    if (!fullName) { showError('fullName', 'fullNameError', 'Required.'); valid = false; }
+    if (!username) { showError('username', 'usernameError', 'Required.'); valid = false; }
+    else if (username.length < 3) { showError('username', 'usernameError', 'Min 3 characters.'); valid = false; }
+    else if (takenUsernames.includes(username.toLowerCase())) { showError('username', 'usernameError', 'Username already taken.'); valid = false; }
+
+    if (!email) { showError('register-email', 'register-emailError', 'Email is required.'); valid = false; }
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('register-email', 'register-emailError', 'Enter a valid email address.'); valid = false; }
+
+    if (!password) { showError('register-password', 'register-passwordError', 'Password is required.'); valid = false; }
+    else if (password.length < 8) { showError('register-password', 'register-passwordError', 'Minimum 8 characters.'); valid = false; }
+
+    if (confirmPassword !== password || !confirmPassword) { showError('confirmPassword', 'confirmPasswordError', 'Passwords do not match.'); valid = false; }
+
+    if (!agreeTerms) {
+      registerAlertText.textContent = 'You must agree to the Terms of Service and confirm you are 18+.';
+      registerAlert.classList.add('visible');
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    registerBtn.disabled = true;
+    registerBtnText.textContent = 'Creating account...';
+    registerSpinner.style.display = 'block';
+
+    await new Promise(r => setTimeout(r, 1600));
+
+    goToPage('feed');
+  });
+
+  function handleOAuth(provider) {
+    const btn = event.currentTarget;
+    btn.innerHTML = `<span style="opacity:.6;font-size:13px;">Connecting to ${provider}...</span>`;
+    btn.disabled = true;
+    setTimeout(() => { goToPage('feed'); }, 1200);
+  }
+
+  })();
+  </script>
+
+  <script>
+  (function() {
+
+  // ---- Feed tab switching ----
+  document.querySelectorAll('.feed-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      // In production: fetch feed data for selected tab
+    });
+  });
+
+  // ---- Like button toggle ----
+  document.querySelectorAll('.like-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const countEl = btn.querySelector('.count');
+      const liked = btn.classList.toggle('liked');
+      const current = parseInt(countEl.textContent.replace(/,/g, ''));
+      countEl.textContent = (liked ? current + 1 : current - 1).toLocaleString();
+    });
+  });
+
+  // ---- Save button toggle ----
+  document.querySelectorAll('.save-btn').forEach(btn => {
+    btn.addEventListener('click', () => btn.classList.toggle('saved'));
+  });
+
+  // ---- Follow button toggle ----
+  function toggleFollow(btn) {
+    const following = btn.classList.toggle('following');
+    btn.textContent = following ? 'Following' : 'Follow';
+  }
+
+  // ---- Composer modal ----
+  const composerModal = document.getElementById('composerModal');
+  const openBtns = [document.getElementById('openComposerBtn'), document.getElementById('openComposerLink'), document.getElementById('composerPrompt'), document.getElementById('mobileComposerBtn')];
+  const closeBtns = [document.getElementById('closeComposer'), document.getElementById('cancelComposer')];
+
+  openBtns.forEach(btn => {
+    if (!btn) return;
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      composerModal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  closeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      composerModal.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+
+  composerModal.addEventListener('click', (e) => {
+    if (e.target === composerModal) {
+      composerModal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // ---- Infinite scroll simulation ----
+  const feedPosts = document.getElementById('feedPosts');
+  const skeletonLoader = document.getElementById('skeletonLoader');
+  const feedEnd = document.getElementById('feedEnd');
+  let loadedMore = false;
+
+  window.addEventListener('scroll', () => {
+    if (loadedMore) return;
+    const scrollPos = window.innerHeight + window.scrollY;
+    const threshold = document.body.offsetHeight - 600;
+    if (scrollPos >= threshold) {
+      loadedMore = true;
+      skeletonLoader.style.display = 'block';
+      feedEnd.style.display = 'none';
+      setTimeout(() => {
+        skeletonLoader.style.display = 'none';
+        feedEnd.style.display = 'block';
+      }, 1200);
+    }
+  }, { passive: true });
+
+  })();
+  </script>
+
 </body>
 </html>
