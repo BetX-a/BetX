@@ -3159,6 +3159,329 @@
   
   </style>
 
+
+  <style>
+/* ============================================================
+   NEW PAGES — Profile, Explore, Notifications + App-wide fixes
+   ============================================================ */
+
+/* ---- Shared app-page wrapper (all inner pages) ---- */
+.app-page { display: flex; min-height: 100vh; }
+.app-content { flex: 1; min-width: 0; border-right: 1px solid var(--color-border-dim); }
+.app-topbar {
+  position: sticky; top: 0; z-index: 20;
+  background: rgba(13,13,13,.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--color-border-dim);
+  padding: var(--space-4) var(--space-5);
+  display: flex; align-items: center; gap: var(--space-3);
+}
+.app-topbar__title { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; }
+.app-topbar__back { color: var(--color-text-muted); padding: 6px; border-radius: var(--radius-md); transition: all var(--duration-fast); display: flex; align-items: center; }
+.app-topbar__back:hover { background: var(--color-surface-2); color: var(--color-text-primary); }
+
+/* ============================================================
+   PROFILE PAGE
+   ============================================================ */
+.profile-banner {
+  height: 180px;
+  position: relative;
+  overflow: hidden;
+}
+.profile-banner__img {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #1a1a00 0%, #2a2200 40%, #0d0d0d 100%);
+  position: relative;
+}
+.profile-banner__img::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(transparent 40%, rgba(13,13,13,.8) 100%);
+}
+.profile-banner__edit {
+  position: absolute; top: var(--space-4); right: var(--space-4);
+  background: rgba(13,13,13,.7); backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  padding: 6px 12px; font-size: var(--text-xs); font-weight: 600;
+  color: var(--color-text-primary); cursor: pointer;
+  transition: all var(--duration-fast);
+}
+.profile-banner__edit:hover { background: var(--color-surface-3); }
+
+.profile-info {
+  padding: 0 var(--space-5) var(--space-5);
+  margin-top: -48px;
+  position: relative;
+}
+.profile-info__top {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+.profile-avatar-wrap { position: relative; }
+.profile-avatar {
+  width: 96px; height: 96px; border-radius: 50%;
+  border: 4px solid var(--color-base);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; font-weight: 800;
+}
+.profile-avatar__edit {
+  position: absolute; bottom: 2px; right: 2px;
+  width: 28px; height: 28px; background: var(--color-gold);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; border: 2px solid var(--color-base); cursor: pointer;
+}
+.profile-info__actions { display: flex; gap: var(--space-3); padding-bottom: var(--space-2); }
+
+.profile-name { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 800; letter-spacing: -.02em; margin-bottom: 2px; display: flex; align-items: center; gap: var(--space-2); }
+.profile-handle { font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-3); }
+.profile-bio { font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.65; margin-bottom: var(--space-4); max-width: 480px; }
+.profile-meta { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+.profile-meta__item { font-size: var(--text-sm); color: var(--color-text-muted); display: flex; align-items: center; gap: 4px; }
+.profile-meta__item strong { color: var(--color-text-primary); font-weight: 700; }
+
+.profile-stats {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid var(--color-border-dim);
+  margin-top: var(--space-4);
+}
+.profile-stat {
+  padding: var(--space-4) var(--space-3); text-align: center;
+  border-right: 1px solid var(--color-border-dim);
+}
+.profile-stat:last-child { border-right: none; }
+.profile-stat__val { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 800; font-variant-numeric: tabular-nums; }
+.profile-stat__val--win { color: var(--color-win); }
+.profile-stat__val--gold { color: var(--color-gold); }
+.profile-stat__label { font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 2px; text-transform: uppercase; letter-spacing: .06em; }
+
+/* Profile tabs */
+.profile-tabs {
+  display: flex; border-bottom: 1px solid var(--color-border-dim);
+  padding: 0 var(--space-5); position: sticky; top: 0;
+  background: rgba(13,13,13,.92); backdrop-filter: blur(16px); z-index: 10;
+}
+.profile-tab {
+  padding: var(--space-4) var(--space-5); font-size: var(--text-sm); font-weight: 600;
+  color: var(--color-text-muted); border-bottom: 2px solid transparent;
+  margin-bottom: -1px; transition: all var(--duration-fast); white-space: nowrap;
+}
+.profile-tab:hover { color: var(--color-text-primary); }
+.profile-tab.active { color: var(--color-text-primary); border-bottom-color: var(--color-gold); }
+
+.profile-tab-content { display: none; }
+.profile-tab-content.active { display: block; }
+
+/* Posts grid for media tab */
+.media-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+}
+.media-grid__item {
+  aspect-ratio: 1; background: var(--color-surface-3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; cursor: pointer; position: relative; overflow: hidden;
+}
+.media-grid__item:hover .media-grid__overlay { opacity: 1; }
+.media-grid__overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,.5);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity var(--duration-fast);
+  color: white; font-size: var(--text-sm); font-weight: 600;
+}
+
+/* ROI chart (SVG-based sparkline) */
+.profile-chart {
+  padding: var(--space-5);
+}
+.chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+.chart-title { font-family: var(--font-display); font-size: var(--text-md); font-weight: 700; }
+.chart-period { display: flex; gap: var(--space-2); }
+.chart-period-btn { padding: 4px 10px; border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: 600; background: var(--color-surface-3); color: var(--color-text-muted); transition: all var(--duration-fast); }
+.chart-period-btn.active { background: var(--color-gold); color: var(--color-text-inverse); }
+.chart-svg-wrap { width: 100%; overflow: hidden; border-radius: var(--radius-lg); background: var(--color-surface-2); border: 1px solid var(--color-border-dim); padding: var(--space-4); }
+
+/* Full stats grid */
+.stats-full-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4);
+  padding: var(--space-5);
+}
+.stats-full-card {
+  background: var(--color-surface-2); border: 1px solid var(--color-border-dim);
+  border-radius: var(--radius-lg); padding: var(--space-4); text-align: center;
+}
+.stats-full-card__val { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 800; font-variant-numeric: tabular-nums; }
+.stats-full-card__label { font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: .06em; }
+
+/* ============================================================
+   EXPLORE PAGE
+   ============================================================ */
+.explore-search-wrap {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border-dim);
+  position: sticky; top: 60px; background: rgba(13,13,13,.92);
+  backdrop-filter: blur(16px); z-index: 10;
+}
+.explore-search {
+  position: relative;
+}
+.explore-search input {
+  width: 100%; background: var(--color-surface-2); border: 1px solid var(--color-border);
+  border-radius: var(--radius-full); padding: .7rem var(--space-4) .7rem 2.75rem;
+  font-size: var(--text-base); color: var(--color-text-primary); outline: none;
+  transition: border-color var(--duration-fast);
+}
+.explore-search input:focus { border-color: var(--color-gold); box-shadow: 0 0 0 3px rgba(212,175,55,.1); }
+.explore-search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--color-text-muted); width: 18px; height: 18px; }
+
+.explore-section { padding: var(--space-5); border-bottom: 1px solid var(--color-border-dim); }
+.explore-section:last-child { border-bottom: none; }
+.explore-section__title { font-family: var(--font-display); font-size: var(--text-md); font-weight: 700; margin-bottom: var(--space-4); }
+
+.explore-creators-row { display: flex; gap: var(--space-4); overflow-x: auto; padding-bottom: var(--space-2); scrollbar-width: none; }
+.explore-creators-row::-webkit-scrollbar { display: none; }
+
+.explore-creator-card {
+  background: var(--color-surface-2); border: 1px solid var(--color-border-dim);
+  border-radius: var(--radius-xl); padding: var(--space-4); min-width: 160px;
+  text-align: center; flex-shrink: 0; transition: all var(--duration-base); cursor: pointer;
+}
+.explore-creator-card:hover { border-color: rgba(212,175,55,.3); transform: translateY(-2px); }
+.explore-creator-card__avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; margin: 0 auto var(--space-2);
+  border: 2px solid var(--color-border);
+}
+.explore-creator-card__name { font-size: var(--text-sm); font-weight: 700; margin-bottom: 2px; }
+.explore-creator-card__win { font-size: var(--text-xs); color: var(--color-win); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.trend-hash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.trend-hash-card {
+  background: var(--color-surface-2); border: 1px solid var(--color-border-dim);
+  border-radius: var(--radius-lg); padding: var(--space-4); cursor: pointer;
+  transition: all var(--duration-fast);
+}
+.trend-hash-card:hover { border-color: var(--color-border); background: var(--color-surface-3); }
+.trend-hash-card__tag { font-size: var(--text-base); font-weight: 700; margin-bottom: 4px; }
+.trend-hash-card__count { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+.explore-picks-list { display: flex; flex-direction: column; gap: var(--space-3); }
+
+/* Search results dropdown */
+.search-results {
+  position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+  background: var(--color-surface-2); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-elevated);
+  z-index: 100; overflow: hidden; display: none;
+}
+.search-results.open { display: block; }
+.search-result-item {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-3) var(--space-4); cursor: pointer;
+  transition: background var(--duration-fast);
+}
+.search-result-item:hover { background: var(--color-surface-3); }
+.search-result-item__name { font-size: var(--text-sm); font-weight: 600; }
+.search-result-item__sub { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+/* ============================================================
+   NOTIFICATIONS PAGE
+   ============================================================ */
+.notif-tabs {
+  display: flex; padding: 0 var(--space-5);
+  border-bottom: 1px solid var(--color-border-dim);
+  position: sticky; top: 60px; background: rgba(13,13,13,.92);
+  backdrop-filter: blur(16px); z-index: 10;
+}
+.notif-tab {
+  padding: var(--space-4) var(--space-4); font-size: var(--text-sm); font-weight: 600;
+  color: var(--color-text-muted); border-bottom: 2px solid transparent;
+  margin-bottom: -1px; transition: all var(--duration-fast); white-space: nowrap;
+}
+.notif-tab:hover { color: var(--color-text-primary); }
+.notif-tab.active { color: var(--color-text-primary); border-bottom-color: var(--color-gold); }
+.notif-list { display: flex; flex-direction: column; }
+.notif-item {
+  display: flex; align-items: flex-start; gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border-dim);
+  transition: background var(--duration-fast); cursor: pointer;
+}
+.notif-item:hover { background: var(--color-surface-1); }
+.notif-item.unread { background: rgba(212,175,55,.03); }
+.notif-item.unread::before {
+  content: ''; width: 6px; height: 6px; background: var(--color-gold);
+  border-radius: 50%; flex-shrink: 0; margin-top: 7px;
+}
+.notif-item:not(.unread)::before { content: ''; width: 6px; flex-shrink: 0; }
+.notif-icon {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0; background: var(--color-surface-3);
+}
+.notif-icon--like { background: rgba(239,68,68,.12); }
+.notif-icon--follow { background: rgba(96,165,250,.12); }
+.notif-icon--comment { background: rgba(212,175,55,.1); }
+.notif-icon--sub { background: rgba(34,197,94,.1); }
+.notif-content { flex: 1; }
+.notif-text { font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.5; }
+.notif-text strong { color: var(--color-text-primary); font-weight: 600; }
+.notif-time { font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 4px; }
+.notif-preview {
+  margin-top: var(--space-2); background: var(--color-surface-2);
+  border: 1px solid var(--color-border-dim); border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3); font-size: var(--text-xs);
+  color: var(--color-text-muted); font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   COMPOSER MODAL UPGRADED
+   ============================================================ */
+.modal__textarea { min-height: 90px; }
+.composer-char-count { font-size: var(--text-xs); color: var(--color-text-muted); text-align: right; margin-top: 4px; }
+.composer-char-count.warn { color: var(--color-loss); }
+.composer-tools {
+  display: flex; gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-dim);
+}
+.composer-tool-btn {
+  width: 34px; height: 34px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--color-text-muted); transition: all var(--duration-fast);
+  font-size: 16px;
+}
+.composer-tool-btn:hover { background: var(--color-surface-3); color: var(--color-gold); }
+.confidence-row { display: flex; align-items: center; gap: var(--space-3); }
+.confidence-slider { flex: 1; accent-color: var(--color-gold); }
+.confidence-val { font-size: var(--text-sm); font-weight: 700; color: var(--color-gold); font-variant-numeric: tabular-nums; min-width: 36px; text-align: right; }
+
+/* ============================================================
+   RIGHT RAIL (reused on profile/explore/notifications)
+   ============================================================ */
+.app-right-rail {
+  width: var(--right-rail-width); flex-shrink: 0;
+  position: sticky; top: 0; height: 100vh;
+  overflow-y: auto; padding: var(--space-6) var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-5);
+  scrollbar-width: thin;
+}
+
+/* ============================================================
+   SIDEBAR ACTIVE STATE (dynamic, set by JS)
+   ============================================================ */
+.sidebar-link.active svg { stroke: var(--color-gold); }
+
+/* ============================================================
+   UPDATED MOBILE NAV (now has all destinations)
+   ============================================================ */
+@media (max-width: 700px) {
+  .profile-stats { grid-template-columns: repeat(3, 1fr); }
+  .stats-full-grid { grid-template-columns: repeat(2, 1fr); }
+  .media-grid { grid-template-columns: repeat(3, 1fr); }
+  .app-right-rail { display: none; }
+  .trend-hash-grid { grid-template-columns: 1fr; }
+}
+
+  </style>
 </head>
 <body>
 
@@ -5191,7 +5514,7 @@
   <a href="#" class="mobile-nav-link">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
   </a>
-  <a href="#" class="mobile-nav-link" id="mobileComposerBtn">
+  <a href="#" class="mobile-nav-link" id="mobileComposerBtn" onclick="openComposer();return false;">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
   </a>
   <a href="#" class="mobile-nav-link">
@@ -5275,11 +5598,421 @@
   </div>
 
 
+
+  <!-- ============================================================
+       PAGE: PROFILE (own + creator view)
+       ============================================================ -->
+  <div id="page-profile" style="display:none;">
+    <div class="app-page">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar__top">
+          <a href="#" onclick="goToPage('landing');return false;" class="sidebar__logo">
+            <div class="logo-mark">B</div><span class="logo-text">BetX</span>
+          </a>
+          <nav class="sidebar-nav" id="profileSidebarNav">
+            <a href="#" onclick="goToPage('feed');return false;" class="sidebar-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              <span>Home</span>
+            </a>
+            <a href="#" onclick="goToPage('explore');return false;" class="sidebar-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <span>Explore</span>
+            </a>
+            <a href="#" onclick="openComposer();return false;" class="sidebar-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+              <span>Create</span>
+            </a>
+            <a href="#" onclick="goToPage('notifications');return false;" class="sidebar-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+              <span>Notifications</span><span class="sidebar-link__badge">12</span>
+            </a>
+            <a href="#" onclick="goToPage('profile');return false;" class="sidebar-link active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <span>Profile</span>
+            </a>
+          </nav>
+          <button class="sidebar-create-btn" onclick="openComposer()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>New Pick</span>
+          </button>
+        </div>
+        <div class="sidebar-user" onclick="goToPage('profile')">
+          <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#1a1a00,#3d3d00);color:#FBBF24;font-weight:800;">JL</div>
+          <div class="sidebar-user__info">
+            <div class="sidebar-user__name">Jordan Lee</div>
+            <div class="sidebar-user__handle">@jordanbets</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main profile content -->
+      <main class="app-content" id="profileMain">
+        <!-- Profile will be rendered dynamically by JS viewProfile() -->
+      </main>
+
+      <!-- Right rail -->
+      <aside class="app-right-rail">
+        <div class="rail-card">
+          <div class="rail-card__title">People to Follow</div>
+          <div class="suggest-row">
+            <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#1a0a2e,#3d1a6e);color:var(--color-gold);font-weight:800;">SA</div>
+            <div class="suggest-info"><div class="suggest-name">SharpAce <span class="v-icon">✦</span></div><div class="suggest-sub">68.3% · NFL · NBA</div></div>
+            <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+          </div>
+          <div class="suggest-row">
+            <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#001a0a,#004d20);color:#22C55E;font-weight:800;">GG</div>
+            <div class="suggest-info"><div class="suggest-name">GoalLine Guru <span class="v-icon">✦</span></div><div class="suggest-sub">71.1% · Soccer</div></div>
+            <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+          </div>
+          <div class="suggest-row">
+            <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#1a001a,#4d004d);color:#C084FC;font-weight:800;">AT</div>
+            <div class="suggest-info"><div class="suggest-name">AceTennisEdge <span class="v-icon">✦</span></div><div class="suggest-sub">73.2% · Tennis</div></div>
+            <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+          </div>
+        </div>
+        <div class="rail-card card--gold">
+          <div style="font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--color-gold);font-weight:700;margin-bottom:10px;">Become a Creator</div>
+          <p style="font-size:var(--text-xs);color:var(--color-text-secondary);line-height:1.6;margin-bottom:12px;">Post 50+ tracked picks and apply for verified status. Unlock subscriptions and monetize your picks.</p>
+          <button class="btn btn--primary btn--sm btn--full">Apply for Verification</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       PAGE: EXPLORE
+       ============================================================ -->
+  <div id="page-explore" style="display:none;">
+    <div class="app-page">
+      <aside class="sidebar">
+        <div class="sidebar__top">
+          <a href="#" onclick="goToPage('landing');return false;" class="sidebar__logo">
+            <div class="logo-mark">B</div><span class="logo-text">BetX</span>
+          </a>
+          <nav class="sidebar-nav">
+            <a href="#" onclick="goToPage('feed');return false;" class="sidebar-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              <span>Home</span>
+            </a>
+            <a href="#" onclick="goToPage('explore');return false;" class="sidebar-link active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <span>Explore</span>
+            </a>
+            <a href="#" onclick="openComposer();return false;" class="sidebar-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+              <span>Create</span>
+            </a>
+            <a href="#" onclick="goToPage('notifications');return false;" class="sidebar-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+              <span>Notifications</span><span class="sidebar-link__badge">12</span>
+            </a>
+            <a href="#" onclick="goToPage('profile');return false;" class="sidebar-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <span>Profile</span>
+            </a>
+          </nav>
+          <button class="sidebar-create-btn" onclick="openComposer()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>New Pick</span>
+          </button>
+        </div>
+        <div class="sidebar-user" onclick="goToPage('profile')">
+          <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#1a1a00,#3d3d00);color:#FBBF24;font-weight:800;">JL</div>
+          <div class="sidebar-user__info">
+            <div class="sidebar-user__name">Jordan Lee</div>
+            <div class="sidebar-user__handle">@jordanbets</div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="app-content">
+        <div class="app-topbar">
+          <div class="app-topbar__title">Explore</div>
+        </div>
+
+        <!-- Search -->
+        <div class="explore-search-wrap">
+          <div class="explore-search" id="exploreSearchWrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="exploreSearch" placeholder="Search creators, picks, teams, hashtags..." autocomplete="off" />
+            <div class="search-results" id="searchResults">
+              <div class="search-result-item" onclick="viewProfile('sharpace')">
+                <div class="avatar-placeholder avatar--sm" style="background:linear-gradient(135deg,#1a0a2e,#3d1a6e);color:var(--color-gold);font-weight:800;">SA</div>
+                <div><div class="search-result-item__name">SharpAce <span class="v-icon">✦</span></div><div class="search-result-item__sub">@sharpace · 68.3% win</div></div>
+              </div>
+              <div class="search-result-item" onclick="viewProfile('goallineguru')">
+                <div class="avatar-placeholder avatar--sm" style="background:linear-gradient(135deg,#001a0a,#004d20);color:#22C55E;font-weight:800;">GG</div>
+                <div><div class="search-result-item__name">GoalLine Guru <span class="v-icon">✦</span></div><div class="search-result-item__sub">@goallineguru · 71.1% win</div></div>
+              </div>
+              <div class="search-result-item">
+                <div style="width:32px;height:32px;border-radius:50%;background:var(--color-surface-4);display:flex;align-items:center;justify-content:center;font-size:14px;">🏈</div>
+                <div><div class="search-result-item__name">#MondayNightFootball</div><div class="search-result-item__sub">Hashtag · 8.4K picks</div></div>
+              </div>
+              <div class="search-result-item">
+                <div style="width:32px;height:32px;border-radius:50%;background:var(--color-surface-4);display:flex;align-items:center;justify-content:center;font-size:14px;">⚽</div>
+                <div><div class="search-result-item__name">Arsenal FC</div><div class="search-result-item__sub">Team · Premier League</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trending Creators -->
+        <div class="explore-section">
+          <div class="explore-section__title">🔥 Trending Creators</div>
+          <div class="explore-creators-row">
+            <div class="explore-creator-card" onclick="viewProfile('sharpace')">
+              <div class="explore-creator-card__avatar" style="background:linear-gradient(135deg,#1a0a2e,#3d1a6e);color:var(--color-gold);">🦅</div>
+              <div class="explore-creator-card__name">SharpAce <span class="v-icon">✦</span></div>
+              <div class="explore-creator-card__win">68.3% Win</div>
+              <div style="font-size:var(--text-xs);color:var(--color-text-muted);">NFL · NBA</div>
+              <button class="follow-btn" style="margin-top:8px;width:100%;justify-content:center;display:flex;" onclick="event.stopPropagation();toggleFollow(this)">Follow</button>
+            </div>
+            <div class="explore-creator-card" onclick="viewProfile('goallineguru')">
+              <div class="explore-creator-card__avatar" style="background:linear-gradient(135deg,#001a0a,#004d20);color:#22C55E;">⚽</div>
+              <div class="explore-creator-card__name">GoalLine Guru <span class="v-icon">✦</span></div>
+              <div class="explore-creator-card__win">71.1% Win</div>
+              <div style="font-size:var(--text-xs);color:var(--color-text-muted);">Soccer</div>
+              <button class="follow-btn" style="margin-top:8px;width:100%;justify-content:center;display:flex;" onclick="event.stopPropagation();toggleFollow(this)">Follow</button>
+            </div>
+            <div class="explore-creator-card">
+              <div class="explore-creator-card__avatar" style="background:linear-gradient(135deg,#1a001a,#4d004d);color:#C084FC;">🎾</div>
+              <div class="explore-creator-card__name">AceTennisEdge <span class="v-icon">✦</span></div>
+              <div class="explore-creator-card__win">73.2% Win</div>
+              <div style="font-size:var(--text-xs);color:var(--color-text-muted);">ATP · WTA</div>
+              <button class="follow-btn" style="margin-top:8px;width:100%;justify-content:center;display:flex;" onclick="event.stopPropagation();toggleFollow(this)">Follow</button>
+            </div>
+            <div class="explore-creator-card">
+              <div class="explore-creator-card__avatar" style="background:linear-gradient(135deg,#1a1a00,#3d3d00);color:#FBBF24;">🏈</div>
+              <div class="explore-creator-card__name">ValueKing_88 <span class="v-icon">✦</span></div>
+              <div class="explore-creator-card__win">65.0% Win</div>
+              <div style="font-size:var(--text-xs);color:var(--color-text-muted);">NFL · CFB</div>
+              <button class="follow-btn" style="margin-top:8px;width:100%;justify-content:center;display:flex;" onclick="event.stopPropagation();toggleFollow(this)">Follow</button>
+            </div>
+            <div class="explore-creator-card">
+              <div class="explore-creator-card__avatar" style="background:linear-gradient(135deg,#0a1a2e,#1a3a6e);color:#60A5FA;">⚾</div>
+              <div class="explore-creator-card__name">DiamondDegen</div>
+              <div class="explore-creator-card__win">59.2% Win</div>
+              <div style="font-size:var(--text-xs);color:var(--color-text-muted);">MLB</div>
+              <button class="follow-btn" style="margin-top:8px;width:100%;justify-content:center;display:flex;" onclick="event.stopPropagation();toggleFollow(this)">Follow</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trending Hashtags -->
+        <div class="explore-section">
+          <div class="explore-section__title">📈 Trending Hashtags</div>
+          <div class="trend-hash-grid">
+            <div class="trend-hash-card"><div class="trend-hash-card__tag">#MNF</div><div class="trend-hash-card__count">12.4K picks today</div></div>
+            <div class="trend-hash-card"><div class="trend-hash-card__tag">#ChampionsLeague</div><div class="trend-hash-card__count">8.1K picks today</div></div>
+            <div class="trend-hash-card"><div class="trend-hash-card__tag">#PlayoffPush</div><div class="trend-hash-card__count">5.6K picks today</div></div>
+            <div class="trend-hash-card"><div class="trend-hash-card__tag">#PropBets</div><div class="trend-hash-card__count">4.2K picks today</div></div>
+            <div class="trend-hash-card"><div class="trend-hash-card__tag">#NBAToday</div><div class="trend-hash-card__count">3.8K picks today</div></div>
+            <div class="trend-hash-card"><div class="trend-hash-card__tag">#ValueBet</div><div class="trend-hash-card__count">2.9K picks today</div></div>
+          </div>
+        </div>
+
+        <!-- Trending Sports -->
+        <div class="explore-section">
+          <div class="explore-section__title">🏆 Browse by Sport</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;">
+            <button class="tag" style="padding:8px 18px;font-size:var(--text-sm);cursor:pointer;">🏈 NFL</button>
+            <button class="tag" style="padding:8px 18px;font-size:var(--text-sm);cursor:pointer;">🏀 NBA</button>
+            <button class="tag" style="padding:8px 18px;font-size:var(--text-sm);cursor:pointer;">⚾ MLB</button>
+            <button class="tag" style="padding:8px 18px;font-size:var(--text-sm);cursor:pointer;">🏒 NHL</button>
+            <button class="tag" style="padding:8px 18px;font-size:var(--text-sm);cursor:pointer;">⚽ Soccer</button>
+            <button class="tag" style="padding:8px 18px;font-size:var(--text-sm);cursor:pointer;">🎾 Tennis</button>
+            <button class="tag" style="padding:8px 18px;font-size:var(--text-sm);cursor:pointer;">🥊 MMA</button>
+            <button class="tag" style="padding:8px 18px;font-size:var(--text-sm);cursor:pointer;">🏌️ Golf</button>
+            <button class="tag" style="padding:8px 18px;font-size:var(--text-sm);cursor:pointer;">🏈 CFB</button>
+            <button class="tag" style="padding:8px 18px;font-size:var(--text-sm);cursor:pointer;">🏀 NCAAB</button>
+          </div>
+        </div>
+
+        <!-- Trending Picks -->
+        <div class="explore-section">
+          <div class="explore-section__title">⚡ Trending Picks Right Now</div>
+          <div class="explore-picks-list" id="explorePicks">
+            <!-- populated by JS from POSTS_DB -->
+          </div>
+        </div>
+      </main>
+
+      <aside class="app-right-rail">
+        <div class="rail-card">
+          <div class="rail-card__title">Suggested for You</div>
+          <div class="suggest-row">
+            <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#1a0a2e,#3d1a6e);color:var(--color-gold);font-weight:800;">SA</div>
+            <div class="suggest-info"><div class="suggest-name">SharpAce <span class="v-icon">✦</span></div><div class="suggest-sub">68.3% · NFL · NBA</div></div>
+            <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+          </div>
+          <div class="suggest-row">
+            <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#001a0a,#004d20);color:#22C55E;font-weight:800;">GG</div>
+            <div class="suggest-info"><div class="suggest-name">GoalLine Guru <span class="v-icon">✦</span></div><div class="suggest-sub">71.1% · Soccer</div></div>
+            <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       PAGE: NOTIFICATIONS
+       ============================================================ -->
+  <div id="page-notifications" style="display:none;">
+    <div class="app-page">
+      <aside class="sidebar">
+        <div class="sidebar__top">
+          <a href="#" onclick="goToPage('landing');return false;" class="sidebar__logo">
+            <div class="logo-mark">B</div><span class="logo-text">BetX</span>
+          </a>
+          <nav class="sidebar-nav">
+            <a href="#" onclick="goToPage('feed');return false;" class="sidebar-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              <span>Home</span>
+            </a>
+            <a href="#" onclick="goToPage('explore');return false;" class="sidebar-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <span>Explore</span>
+            </a>
+            <a href="#" onclick="openComposer();return false;" class="sidebar-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+              <span>Create</span>
+            </a>
+            <a href="#" onclick="goToPage('notifications');return false;" class="sidebar-link active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+              <span>Notifications</span>
+            </a>
+            <a href="#" onclick="goToPage('profile');return false;" class="sidebar-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <span>Profile</span>
+            </a>
+          </nav>
+          <button class="sidebar-create-btn" onclick="openComposer()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>New Pick</span>
+          </button>
+        </div>
+        <div class="sidebar-user" onclick="goToPage('profile')">
+          <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#1a1a00,#3d3d00);color:#FBBF24;font-weight:800;">JL</div>
+          <div class="sidebar-user__info">
+            <div class="sidebar-user__name">Jordan Lee</div>
+            <div class="sidebar-user__handle">@jordanbets</div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="app-content">
+        <div class="app-topbar">
+          <div class="app-topbar__title">Notifications</div>
+          <button class="btn btn--ghost btn--sm" style="margin-left:auto;font-size:var(--text-xs);" onclick="markAllRead()">Mark all read</button>
+        </div>
+
+        <div class="notif-tabs">
+          <button class="notif-tab active" onclick="switchNotifTab(this,'all')">All</button>
+          <button class="notif-tab" onclick="switchNotifTab(this,'likes')">Likes</button>
+          <button class="notif-tab" onclick="switchNotifTab(this,'follows')">Follows</button>
+          <button class="notif-tab" onclick="switchNotifTab(this,'subs')">Subscriptions</button>
+        </div>
+
+        <div class="notif-list" id="notifList">
+          <div class="notif-item unread">
+            <span></span>
+            <div class="notif-icon notif-icon--sub">💰</div>
+            <div class="notif-content">
+              <div class="notif-text"><strong>SharpAce</strong> just posted a new premium pick — Chiefs -3.5 at -108</div>
+              <div class="notif-preview">🏈 NFL · Chiefs vs Ravens · Spread · DraftKings</div>
+              <div class="notif-time">2 minutes ago</div>
+            </div>
+          </div>
+          <div class="notif-item unread">
+            <span></span>
+            <div class="notif-icon notif-icon--like">❤️</div>
+            <div class="notif-content">
+              <div class="notif-text"><strong>GoalLine Guru</strong> and <strong>IceCapsPicks</strong> liked your pick</div>
+              <div class="notif-preview">Your pick: Dodgers -1.5 RL · +125</div>
+              <div class="notif-time">14 minutes ago</div>
+            </div>
+          </div>
+          <div class="notif-item unread">
+            <span></span>
+            <div class="notif-icon notif-icon--follow">👤</div>
+            <div class="notif-content">
+              <div class="notif-text"><strong>ValueKing_88</strong> started following you</div>
+              <div class="notif-time">1 hour ago</div>
+            </div>
+          </div>
+          <div class="notif-item unread">
+            <span></span>
+            <div class="notif-icon notif-icon--comment">💬</div>
+            <div class="notif-content">
+              <div class="notif-text"><strong>DiamondDegen</strong> replied to your pick: "Exactly what I was thinking, great spot"</div>
+              <div class="notif-preview">Your pick: Chiefs -3.5 ML</div>
+              <div class="notif-time">2 hours ago</div>
+            </div>
+          </div>
+          <div class="notif-item unread">
+            <span></span>
+            <div class="notif-icon notif-icon--sub">⭐</div>
+            <div class="notif-content">
+              <div class="notif-text"><strong>3 new people</strong> subscribed to your picks this week</div>
+              <div class="notif-time">Today</div>
+            </div>
+          </div>
+          <div class="notif-item">
+            <span></span>
+            <div class="notif-icon notif-icon--like">❤️</div>
+            <div class="notif-content">
+              <div class="notif-text"><strong>SharpAce</strong>, <strong>AceTennisEdge</strong> and <strong>47 others</strong> liked your pick</div>
+              <div class="notif-preview">Your pick: Lakers +5.5 · -110</div>
+              <div class="notif-time">Yesterday</div>
+            </div>
+          </div>
+          <div class="notif-item">
+            <span></span>
+            <div class="notif-icon notif-icon--follow">👤</div>
+            <div class="notif-content">
+              <div class="notif-text"><strong>RinkHawk</strong> and <strong>4 others</strong> started following you</div>
+              <div class="notif-time">Yesterday</div>
+            </div>
+          </div>
+          <div class="notif-item">
+            <span></span>
+            <div class="notif-icon notif-icon--sub">💰</div>
+            <div class="notif-content">
+              <div class="notif-text">GoalLine Guru posted a new premium pick — unlock for $15/mo</div>
+              <div class="notif-preview">⚽ Champions League · Man City vs Real Madrid</div>
+              <div class="notif-time">2 days ago</div>
+            </div>
+          </div>
+          <div class="notif-item">
+            <span></span>
+            <div class="notif-icon notif-icon--comment">💬</div>
+            <div class="notif-content">
+              <div class="notif-text"><strong>IceCapsPicks</strong> mentioned you: "@jordanbets nice spot on that Oilers line"</div>
+              <div class="notif-time">2 days ago</div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <aside class="app-right-rail">
+        <div class="rail-card">
+          <div class="rail-card__title">Live Scores</div>
+          <div class="live-score-row"><div><div class="live-score-teams">KC vs BAL</div><div class="live-score-sub">Q3 · 8:42</div></div><div class="live-score-val">21–17</div></div>
+          <div class="live-score-row"><div><div class="live-score-teams">ARS vs CHE</div><div class="live-score-sub">HT</div></div><div class="live-score-val">1–1</div></div>
+          <div class="live-score-row"><div><div class="live-score-teams">EDM vs COL</div><div class="live-score-sub">OT</div></div><div class="live-score-val">3–3</div></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+
   <script>
     // ============================================================
     // ROUTER — switches between landing / login / register / feed
     // ============================================================
-    const PAGES = ['landing', 'login', 'register', 'feed'];
+    const PAGES = ['landing', 'login', 'register', 'feed', 'profile', 'explore', 'notifications'];
 
     function goToPage(pageName) {
       if (!PAGES.includes(pageName)) return;
@@ -5287,9 +6020,8 @@
         const el = document.getElementById('page-' + p);
         if (el) el.style.display = (p === pageName) ? 'block' : 'none';
       });
-      window.scrollTo({ top: 0, behavior: 'instant' in document.documentElement.style ? 'instant' : 'auto' });
+      window.scrollTo({ top: 0, behavior: 'auto' });
       document.body.style.overflow = '';
-      // Update a simple hash so back/forward + refresh feel sane (optional, non-blocking)
       try { history.replaceState(null, '', '#' + pageName); } catch (e) {}
     }
 
@@ -5744,6 +6476,883 @@
   }, { passive: true });
 
   })();
+  </script>
+
+
+  <script>
+  // ============================================================
+  // BETX APP — Global state, composer, profile, explore, notifications
+  // ============================================================
+
+  // ---- POSTS DATABASE (in-memory, resets on refresh) ----
+  const POSTS_DB = [
+    {
+      id: 'p1', username: 'SharpAce', handle: 'sharpace', initials: 'SA',
+      avatarBg: 'linear-gradient(135deg,#1a0a2e,#3d1a6e)', avatarColor: '#D4AF37',
+      verified: true, winRate: '68.3%', timeAgo: '12m ago',
+      sport: '🏈 NFL', league: 'NFL · Week 14', status: 'live', statusLabel: 'LIVE · Q3',
+      team1: 'Chiefs', team2: 'Ravens', score: '21–17',
+      betType: 'Spread', pick: 'Chiefs -3.5', odds: '-108',
+      tags: ['🏈 NFL','Spread','DraftKings','2u'],
+      caption: 'Mahomes locked in tonight, defense holding strong. Line already moved to -4 on some books. Confidence: 82%',
+      likes: 381, comments: 94, book: 'DraftKings', premium: false
+    },
+    {
+      id: 'p2', username: 'GoalLine Guru', handle: 'goallineguru', initials: 'GG',
+      avatarBg: 'linear-gradient(135deg,#001a0a,#004d20)', avatarColor: '#22C55E',
+      verified: true, winRate: '71.1%', timeAgo: '1h ago',
+      sport: '⚽ Soccer', league: 'Champions League', status: 'premium', statusLabel: '🔒 PREMIUM',
+      team1: 'Man City', team2: 'Real Madrid', score: 'Tomorrow, 3PM ET',
+      betType: 'Total Goals', pick: '████████', odds: '████',
+      tags: ['⚽ UCL','Total','Bet365'],
+      caption: 'Real Madrid away record in UCL knockouts this season...',
+      likes: 506, comments: 38, book: 'Bet365', premium: true
+    },
+    {
+      id: 'p3', username: 'IceCapsPicks', handle: 'icecapspicks', initials: 'IC',
+      avatarBg: 'linear-gradient(135deg,#1a0a00,#4d2000)', avatarColor: '#FB923C',
+      verified: false, winRate: '63.8%', timeAgo: '3h ago',
+      sport: '🏒 NHL', league: 'NHL · OT', status: 'win', statusLabel: '✓ WIN',
+      team1: 'Oilers', team2: 'Avalanche', score: '4–3 OT',
+      betType: 'Puck Line', pick: 'Oilers PL', odds: '+140',
+      tags: ['🏒 NHL','Puck Line','BetMGM','1u'],
+      caption: 'McDavid in OT is a different animal. The +140 on the puck line paid. +1.4u 🔥',
+      likes: 892, comments: 156, book: 'BetMGM', premium: false
+    },
+    {
+      id: 'p4', username: 'DiamondDegen', handle: 'diamonddegen', initials: 'DD',
+      avatarBg: 'linear-gradient(135deg,#0a1a2e,#1a3a6e)', avatarColor: '#60A5FA',
+      verified: false, winRate: '59.2%', timeAgo: '5h ago',
+      sport: '⚾ MLB', league: 'MLB · Final', status: 'win', statusLabel: '✓ WIN',
+      team1: 'Dodgers', team2: 'Padres', score: '6–2',
+      betType: 'Run Line', pick: 'Dodgers -1.5', odds: '+125',
+      tags: ['⚾ MLB','Run Line','FanDuel','1u'],
+      caption: 'Called it — Ohtani made a statement at home. Run line cashed easy, exactly as I drew it up.',
+      likes: 728, comments: 143, book: 'FanDuel', premium: false
+    }
+  ];
+
+  // User's own posts (starts empty, populated by composer)
+  const MY_POSTS = [];
+
+  // ---- CREATOR PROFILES ----
+  const CREATOR_PROFILES = {
+    me: {
+      name: 'Jordan Lee', handle: 'jordanbets', initials: 'JL',
+      avatarBg: 'linear-gradient(135deg,#1a1a00,#3d3d00)', avatarColor: '#FBBF24',
+      verified: false, bio: 'Sports bettor since 2019. Primarily NFL, NBA, and MLB. Tracking every pick publicly. Building my record one game at a time.',
+      followers: '142', following: '89', winRate: '54.1%', roi: '+8.3%', units: '+12.4', avgOdds: '-112', picks: '37',
+      favSport: '🏈 NFL', premium: false,
+      bannerGrad: 'linear-gradient(135deg,#1a1a00 0%,#2a2200 40%,#0d0d0d 100%)'
+    },
+    sharpace: {
+      name: 'SharpAce', handle: 'sharpace', initials: 'SA',
+      avatarBg: 'linear-gradient(135deg,#1a0a2e,#3d1a6e)', avatarColor: '#D4AF37',
+      verified: true, bio: 'NFL & NBA sharp. 68%+ ATS since 2021. Premium picks available monthly. All records tracked publicly — no hiding losses.',
+      followers: '4.8K', following: '120', winRate: '68.3%', roi: '+31.4%', units: '+89.2', avgOdds: '-108', picks: '142',
+      favSport: '🏈 NFL', premium: true,
+      bannerGrad: 'linear-gradient(135deg,#1a0a2e 0%,#0d0d0d 100%)'
+    },
+    goallineguru: {
+      name: 'GoalLine Guru', handle: 'goallineguru', initials: 'GG',
+      avatarBg: 'linear-gradient(135deg,#001a0a,#004d20)', avatarColor: '#22C55E',
+      verified: true, bio: 'Soccer specialist. EPL, UCL, La Liga. 71% win rate over 97 picks. Subscription = full analysis + pick before kickoff.',
+      followers: '2.1K', following: '44', winRate: '71.1%', roi: '+44.7%', units: '+43.4', avgOdds: '+112', picks: '97',
+      favSport: '⚽ Soccer', premium: true,
+      bannerGrad: 'linear-gradient(135deg,#001a0a 0%,#0d0d0d 100%)'
+    }
+  };
+
+  // ---- ROI CHART DATA ----
+  const ROI_DATA = {
+    me:     [0, 1.2, 0.8, 2.1, 1.8, 3.4, 2.9, 4.2, 5.1, 6.0, 7.4, 8.3],
+    sharpace: [0, 3, 5.1, 8, 11, 14, 18, 22, 24, 27, 29, 31.4],
+    goallineguru: [0, 4, 8, 12, 17, 22, 28, 33, 36, 40, 42, 44.7]
+  };
+
+  // ============================================================
+  // ROUTER EXTENSIONS (new pages)
+  // ============================================================
+  (function extendRouter() {
+    const origPages = ['landing','login','register','feed'];
+    const newPages = ['profile','explore','notifications'];
+    newPages.forEach(p => {
+      if (!origPages.includes(p)) {
+        // goToPage already handles any id="page-X" element
+      }
+    });
+    // Patch PAGES array in the router scope by re-declaring on window
+    window._betxPages = [...origPages, ...newPages];
+    // Override goToPage to use extended list
+    window.goToPage = function(pageName) {
+      const allPages = window._betxPages;
+      if (!allPages.includes(pageName)) return;
+      allPages.forEach(p => {
+        const el = document.getElementById('page-' + p);
+        if (el) el.style.display = (p === pageName) ? 'block' : 'none';
+      });
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      document.body.style.overflow = '';
+      try { history.replaceState(null, '', '#' + pageName); } catch(e) {}
+
+      // Run page-specific init
+      if (pageName === 'profile') renderProfile('me');
+      if (pageName === 'explore') renderExplorePicks();
+      if (pageName === 'feed') rebindFeedInteractions();
+    };
+  })();
+
+  // ============================================================
+  // FEED SIDEBAR NAV — wire up in existing feed page
+  // ============================================================
+  (function wireFeedSidebar() {
+    // Find existing sidebar links in page-feed and update their hrefs
+    const feedPage = document.getElementById('page-feed');
+    if (!feedPage) return;
+    const links = feedPage.querySelectorAll('.sidebar-link');
+    const destinations = [
+      { text: 'Home',          page: 'feed' },
+      { text: 'Explore',       page: 'explore' },
+      { text: 'Create',        page: null }, // handled by composer
+      { text: 'Messages',      page: null },
+      { text: 'Notifications', page: 'notifications' },
+      { text: 'Profile',       page: 'profile' },
+      { text: 'Settings',      page: null },
+    ];
+    links.forEach((link, i) => {
+      const dest = destinations[i];
+      if (!dest) return;
+      if (dest.page) {
+        link.onclick = (e) => { e.preventDefault(); goToPage(dest.page); };
+      } else if (dest.text === 'Create') {
+        link.onclick = (e) => { e.preventDefault(); openComposer(); };
+      }
+    });
+    // Sidebar user click → profile
+    const sidebarUser = feedPage.querySelector('.sidebar-user');
+    if (sidebarUser) sidebarUser.onclick = () => goToPage('profile');
+    // Mobile nav
+    const mobileNav = feedPage.querySelector('.mobile-nav');
+    if (mobileNav) {
+      const mLinks = mobileNav.querySelectorAll('.mobile-nav-link');
+      const mDest = ['feed','explore',null,'notifications','profile'];
+      mLinks.forEach((ml, i) => {
+        if (mDest[i]) ml.onclick = (e) => { e.preventDefault(); goToPage(mDest[i]); };
+        else if (i === 2) ml.onclick = (e) => { e.preventDefault(); openComposer(); };
+      });
+    }
+  })();
+
+  // ============================================================
+  // COMPOSER — fully wired post creation
+  // ============================================================
+  function openComposer() {
+    const modal = document.getElementById('composerModal');
+    if (modal) { modal.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  }
+
+  (function initComposer() {
+    const modal = document.getElementById('composerModal');
+    if (!modal) return;
+
+    // Upgrade the modal markup with full fields
+    const body = modal.querySelector('.modal__body');
+    body.innerHTML = `
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div class="avatar-placeholder avatar--md" style="background:linear-gradient(135deg,#1a1a00,#3d3d00);color:#FBBF24;font-weight:800;">JL</div>
+        <div style="flex:1;">
+          <textarea class="modal__textarea" id="composerCaption" placeholder="Share your pick analysis..." style="width:100%;resize:none;"></textarea>
+          <div class="composer-char-count" id="composerCharCount">0 / 280</div>
+        </div>
+      </div>
+
+      <div class="modal__field-row">
+        <div class="field">
+          <label class="field__label">Sport</label>
+          <select class="field__input" id="composerSport">
+            <option value="🏈 NFL">🏈 NFL</option>
+            <option value="🏀 NBA">🏀 NBA</option>
+            <option value="⚾ MLB">⚾ MLB</option>
+            <option value="🏒 NHL">🏒 NHL</option>
+            <option value="⚽ Soccer">⚽ Soccer</option>
+            <option value="🎾 Tennis">🎾 Tennis</option>
+            <option value="🥊 MMA">🥊 MMA</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field__label">Sportsbook</label>
+          <select class="field__input" id="composerBook">
+            <option>DraftKings</option>
+            <option>FanDuel</option>
+            <option>Bet365</option>
+            <option>BetMGM</option>
+            <option>Caesars</option>
+            <option>PointsBet</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal__field-row">
+        <div class="field">
+          <label class="field__label">Your Pick</label>
+          <input class="field__input" id="composerPick" type="text" placeholder="e.g. Chiefs -3.5" />
+        </div>
+        <div class="field">
+          <label class="field__label">Odds</label>
+          <input class="field__input" id="composerOdds" type="text" placeholder="e.g. -110" />
+        </div>
+      </div>
+
+      <div class="modal__field-row">
+        <div class="field">
+          <label class="field__label">Bet Type</label>
+          <select class="field__input" id="composerBetType">
+            <option>Spread</option>
+            <option>Moneyline</option>
+            <option>Total (O/U)</option>
+            <option>Player Prop</option>
+            <option>Parlay</option>
+            <option>Team Total</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field__label">Units</label>
+          <input class="field__input" id="composerUnits" type="number" min="0.5" max="5" step="0.5" placeholder="e.g. 1" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field__label" style="display:flex;align-items:center;justify-content:space-between;">
+          Confidence
+          <span class="confidence-val" id="composerConfVal">70%</span>
+        </label>
+        <input type="range" class="confidence-slider" id="composerConf" min="50" max="99" value="70" />
+      </div>
+
+      <div class="modal__premium-toggle">
+        <div>
+          <div style="font-size:var(--text-sm);font-weight:600;color:var(--color-gold);">🔒 Make this Premium</div>
+          <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px;">Only subscribers see the full pick</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="composerPremium" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    `;
+
+    // Wire char counter
+    const caption = document.getElementById('composerCaption');
+    const charCount = document.getElementById('composerCharCount');
+    caption.addEventListener('input', () => {
+      const len = caption.value.length;
+      charCount.textContent = len + ' / 280';
+      charCount.classList.toggle('warn', len > 250);
+    });
+
+    // Wire confidence slider
+    const conf = document.getElementById('composerConf');
+    const confVal = document.getElementById('composerConfVal');
+    conf.addEventListener('input', () => { confVal.textContent = conf.value + '%'; });
+
+    // Wire close/cancel buttons
+    document.getElementById('closeComposer').onclick = closeComposer;
+    document.getElementById('cancelComposer').onclick = closeComposer;
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeComposer(); });
+
+    // Wire Post Pick button
+    const footer = modal.querySelector('.modal__footer');
+    const postBtn = footer.querySelector('.btn--primary');
+    postBtn.onclick = submitPost;
+  })();
+
+  function closeComposer() {
+    const modal = document.getElementById('composerModal');
+    if (modal) { modal.classList.remove('open'); document.body.style.overflow = ''; }
+  }
+
+  function submitPost() {
+    const caption = document.getElementById('composerCaption').value.trim();
+    const sport   = document.getElementById('composerSport').value;
+    const book    = document.getElementById('composerBook').value;
+    const pick    = document.getElementById('composerPick').value.trim();
+    const odds    = document.getElementById('composerOdds').value.trim();
+    const betType = document.getElementById('composerBetType').value;
+    const units   = document.getElementById('composerUnits').value || '1';
+    const conf    = document.getElementById('composerConf').value;
+    const premium = document.getElementById('composerPremium').checked;
+
+    if (!caption && !pick) {
+      alert('Please add a caption or pick before posting.');
+      return;
+    }
+
+    const now = new Date();
+    const timeAgo = 'Just now';
+    const id = 'my_' + Date.now();
+
+    const post = {
+      id, username: 'Jordan Lee', handle: 'jordanbets', initials: 'JL',
+      avatarBg: 'linear-gradient(135deg,#1a1a00,#3d3d00)', avatarColor: '#FBBF24',
+      verified: false, winRate: '54.1%', timeAgo,
+      sport, league: sport, status: premium ? 'premium' : 'pending',
+      statusLabel: premium ? '🔒 PREMIUM' : '⏳ Pending',
+      team1: '', team2: '', score: '',
+      betType, pick: pick || '—', odds: odds || '—',
+      tags: [sport, betType, book, units + 'u', 'Conf: ' + conf + '%'],
+      caption: caption || '',
+      likes: 0, comments: 0, book, premium,
+      isOwn: true
+    };
+
+    MY_POSTS.unshift(post);
+    POSTS_DB.unshift(post);
+
+    // Prepend to feed
+    prependPostToFeed(post);
+
+    // Reset form
+    document.getElementById('composerCaption').value = '';
+    document.getElementById('composerPick').value = '';
+    document.getElementById('composerOdds').value = '';
+    document.getElementById('composerUnits').value = '';
+    document.getElementById('composerConf').value = '70';
+    document.getElementById('composerConfVal').textContent = '70%';
+    document.getElementById('composerCharCount').textContent = '0 / 280';
+    document.getElementById('composerPremium').checked = false;
+
+    closeComposer();
+
+    // Navigate to feed to show the new post
+    goToPage('feed');
+
+    // Flash the new post
+    setTimeout(() => {
+      const newPost = document.getElementById('post-' + id);
+      if (newPost) {
+        newPost.style.background = 'rgba(212,175,55,.06)';
+        newPost.style.transition = 'background 1s';
+        setTimeout(() => { newPost.style.background = ''; }, 1500);
+        newPost.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  }
+
+  function prependPostToFeed(post) {
+    const container = document.getElementById('feedPosts');
+    if (!container) return;
+
+    const isPremium = post.premium;
+    const statusBadge = post.status === 'live'
+      ? '<span class="badge badge--live"><span class="live-dot"></span>LIVE</span>'
+      : post.status === 'premium'
+      ? '<span class="badge badge--premium">🔒 PREMIUM</span>'
+      : post.status === 'win'
+      ? '<span class="badge badge--win">✓ WIN</span>'
+      : '<span class="badge badge--push">⏳ Pending</span>';
+
+    const tagsHtml = post.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+    const gameSection = post.pick && post.pick !== '—' ? `
+      <div class="post__game-card">
+        <div class="post__game-top">
+          <span class="post__game-league">${post.league}</span>
+          ${statusBadge}
+        </div>
+        ${post.team1 ? `
+        <div class="post__game-teams">
+          <div class="post__team"><div class="post__team-name">${post.team1}</div></div>
+          <div class="post__vs">${post.score || 'vs'}</div>
+          <div class="post__team"><div class="post__team-name">${post.team2}</div></div>
+        </div>` : ''}
+        <div class="post__bet-line">
+          <div><div class="post__bet-type">${post.betType}</div><div class="post__bet-pick">${isPremium ? '████████' : post.pick}</div></div>
+          <div class="post__bet-odds" style="${isPremium ? 'filter:blur(4px)' : ''}">${isPremium ? '████' : post.odds}</div>
+        </div>
+      </div>` : '';
+
+    const premiumLock = isPremium ? `
+      <div class="post__premium-lock">
+        <div class="post__premium-lock-icon">🔒</div>
+        <div class="post__premium-lock-text">This is a premium pick — subscribe to unlock</div>
+        <button class="btn btn--primary btn--sm">Subscribe</button>
+      </div>` : '';
+
+    const captionBlur = isPremium ? 'post__caption--blur' : '';
+    const captionHtml = post.caption ? `<p class="post__caption ${captionBlur}">${post.caption}</p>` : '';
+
+    const el = document.createElement('article');
+    el.className = 'post';
+    el.id = 'post-' + post.id;
+    el.style.borderLeft = '3px solid var(--color-gold)';
+    el.innerHTML = `
+      <div class="post__header">
+        <div class="post__user" onclick="goToPage('profile')">
+          <div class="avatar-placeholder avatar--md" style="background:${post.avatarBg};color:${post.avatarColor};font-weight:800;">${post.initials}</div>
+          <div>
+            <div class="post__username">${post.username}${post.verified ? ' <span class="v-icon">✦</span>' : ''}</div>
+            <div class="post__meta">${post.winRate} W/L &nbsp;·&nbsp; ${post.timeAgo}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          ${statusBadge}
+          <button class="post__more">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+          </button>
+        </div>
+      </div>
+      ${gameSection}
+      ${tagsHtml ? `<div class="post__tags">${tagsHtml}</div>` : ''}
+      ${premiumLock}
+      ${captionHtml}
+      <div class="post__footer">
+        <div class="post__actions">
+          <button class="post__act like-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            <span class="count">0</span>
+          </button>
+          <button class="post__act">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span class="count">0</span>
+          </button>
+          <button class="post__act">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+          </button>
+        </div>
+        <button class="post__act save-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+        </button>
+      </div>`;
+
+    container.insertBefore(el, container.firstChild);
+    bindPostInteractions(el);
+  }
+
+  function bindPostInteractions(el) {
+    el.querySelectorAll('.like-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const countEl = btn.querySelector('.count');
+        const liked = btn.classList.toggle('liked');
+        countEl.textContent = liked
+          ? parseInt(countEl.textContent) + 1
+          : Math.max(0, parseInt(countEl.textContent) - 1);
+      });
+    });
+    el.querySelectorAll('.save-btn').forEach(btn => {
+      btn.addEventListener('click', () => btn.classList.toggle('saved'));
+    });
+  }
+
+  function rebindFeedInteractions() {
+    document.querySelectorAll('#feedPosts .post').forEach(el => bindPostInteractions(el));
+  }
+
+  // ============================================================
+  // PROFILE RENDERER
+  // ============================================================
+  function viewProfile(handle) {
+    goToPage('profile');
+    setTimeout(() => renderProfile(handle), 50);
+  }
+
+  function renderProfile(handle) {
+    const p = CREATOR_PROFILES[handle] || CREATOR_PROFILES['me'];
+    const isMe = (handle === 'me' || handle === 'jordanbets');
+    const main = document.getElementById('profileMain');
+    if (!main) return;
+
+    // Build ROI sparkline SVG
+    const data = ROI_DATA[handle] || ROI_DATA['me'];
+    const max = Math.max(...data), min = Math.min(...data);
+    const w = 480, h = 100, pad = 10;
+    const pts = data.map((v, i) => {
+      const x = pad + (i / (data.length - 1)) * (w - pad * 2);
+      const y = h - pad - ((v - min) / (max - min || 1)) * (h - pad * 2);
+      return `${x},${y}`;
+    }).join(' ');
+    const fillPts = `${pad},${h - pad} ` + pts + ` ${w - pad},${h - pad}`;
+
+    // Build posts for this creator
+    const creatorPosts = POSTS_DB.filter(p2 =>
+      p2.handle === handle || (isMe && p2.isOwn)
+    );
+    const postCards = creatorPosts.length > 0
+      ? creatorPosts.map(renderMiniPost).join('')
+      : (isMe && MY_POSTS.length === 0)
+        ? '<div style="padding:40px;text-align:center;color:var(--color-text-muted);font-size:var(--text-sm);">No posts yet. Create your first pick!</div>'
+        : '<div style="padding:40px;text-align:center;color:var(--color-text-muted);font-size:var(--text-sm);">No public picks yet.</div>';
+
+    main.innerHTML = `
+      <!-- Banner -->
+      <div class="profile-banner">
+        <div class="profile-banner__img" style="background:${p.bannerGrad};">
+          ${isMe ? `<button class="profile-banner__edit" onclick="alert('Banner upload coming in Phase 3!')">Edit Banner</button>` : ''}
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="profile-info">
+        <div class="profile-info__top">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar" style="background:${p.avatarBg};color:${p.avatarColor};">${p.initials}</div>
+            ${isMe ? `<div class="profile-avatar__edit" onclick="alert('Photo upload coming in Phase 3!')">✏️</div>` : ''}
+          </div>
+          <div class="profile-info__actions">
+            ${isMe
+              ? `<button class="btn btn--outline btn--sm" onclick="alert('Edit profile coming in Phase 3!')">Edit Profile</button>
+                 <button class="btn btn--primary btn--sm" onclick="openComposer()">+ New Pick</button>`
+              : `<button class="btn btn--ghost btn--sm">Message</button>
+                 <button class="btn btn--outline btn--sm" id="profileFollowBtn" onclick="handleProfileFollow(this)">Follow</button>
+                 ${p.premium ? `<button class="btn btn--primary btn--sm">Subscribe · $20/mo</button>` : ''}`
+            }
+          </div>
+        </div>
+
+        <div class="profile-name">
+          ${p.name}
+          ${p.verified ? '<span class="v-icon" style="font-size:16px;">✦</span>' : ''}
+          ${p.premium ? '<span class="badge badge--premium" style="font-size:11px;">Premium Creator</span>' : ''}
+        </div>
+        <div class="profile-handle">@${p.handle}</div>
+        <p class="profile-bio">${p.bio}</p>
+        <div class="profile-meta">
+          <span class="profile-meta__item">⭐ <strong>${p.favSport}</strong> specialist</span>
+          <span class="profile-meta__item"><strong>${p.followers}</strong> followers</span>
+          <span class="profile-meta__item"><strong>${p.following}</strong> following</span>
+          <span class="profile-meta__item"><strong>${p.picks}</strong> picks tracked</span>
+        </div>
+      </div>
+
+      <!-- Stats bar -->
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="profile-stat__val profile-stat__val--win">${p.winRate}</div>
+          <div class="profile-stat__label">Win Rate</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat__val profile-stat__val--gold">${p.roi}</div>
+          <div class="profile-stat__label">ROI</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat__val">${p.units}</div>
+          <div class="profile-stat__label">Units Won</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat__val">${p.avgOdds}</div>
+          <div class="profile-stat__label">Avg Odds</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat__val">${p.picks}</div>
+          <div class="profile-stat__label">Total Picks</div>
+        </div>
+      </div>
+
+      <!-- Profile tabs -->
+      <div class="profile-tabs">
+        <button class="profile-tab active" onclick="switchProfileTab(this,'posts')">Posts</button>
+        <button class="profile-tab" onclick="switchProfileTab(this,'media')">Media</button>
+        ${p.premium || isMe ? '<button class="profile-tab" onclick="switchProfileTab(this,\'premium\')">Premium Picks</button>' : ''}
+        <button class="profile-tab" onclick="switchProfileTab(this,'stats')">Stats</button>
+      </div>
+
+      <!-- Tab: Posts -->
+      <div class="profile-tab-content active" id="ptab-posts">
+        ${postCards}
+      </div>
+
+      <!-- Tab: Media -->
+      <div class="profile-tab-content" id="ptab-media">
+        <div class="media-grid">
+          ${['🏈','📊','🏀','⚾','🎯','🏒','📱','🎲','⚽'].map((icon, i) => `
+            <div class="media-grid__item" style="background:${['#1a0a0a','#0a1a0a','#0a0a1a','#1a1a0a','#1a0a1a','#0a1a1a','#1a1208','#080a1a','#121a08'][i % 9]};">
+              ${icon}
+              <div class="media-grid__overlay">View</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Tab: Premium Picks (if applicable) -->
+      ${p.premium || isMe ? `
+      <div class="profile-tab-content" id="ptab-premium">
+        <div style="padding:var(--space-5);">
+          ${!isMe ? `
+            <div style="text-align:center;padding:var(--space-8);background:var(--color-gold-subtle);border:1px solid rgba(212,175,55,.2);border-radius:var(--radius-xl);margin-bottom:var(--space-5);">
+              <div style="font-size:32px;margin-bottom:12px;">🔒</div>
+              <div style="font-family:var(--font-display);font-size:var(--text-lg);font-weight:700;margin-bottom:8px;">Subscribe to unlock all premium picks</div>
+              <div style="font-size:var(--text-sm);color:var(--color-text-secondary);margin-bottom:16px;">Get full analysis, line, odds, and real-time updates for every premium pick</div>
+              <button class="btn btn--primary">Subscribe · $20/mo</button>
+            </div>` : '<p style="font-size:var(--text-sm);color:var(--color-text-muted);padding:var(--space-4) 0;">Your premium picks will appear here once you enable premium on posts.</p>'}
+          ${POSTS_DB.filter(p2 => p2.handle === handle && p2.premium).map(renderMiniPost).join('') || ''}
+        </div>
+      </div>` : ''}
+
+      <!-- Tab: Stats -->
+      <div class="profile-tab-content" id="ptab-stats">
+        <div class="profile-chart">
+          <div class="chart-header">
+            <div class="chart-title">ROI Over Time</div>
+            <div class="chart-period">
+              <button class="chart-period-btn active">All</button>
+              <button class="chart-period-btn">30d</button>
+              <button class="chart-period-btn">7d</button>
+            </div>
+          </div>
+          <div class="chart-svg-wrap">
+            <svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+              <defs>
+                <linearGradient id="roiGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="#D4AF37" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <polygon points="${fillPts}" fill="url(#roiGrad)"/>
+              <polyline points="${pts}" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              ${data.map((v, i) => {
+                const x = pad + (i / (data.length - 1)) * (w - pad * 2);
+                const y = h - pad - ((v - min) / (max - min || 1)) * (h - pad * 2);
+                return i === data.length - 1
+                  ? `<circle cx="${x}" cy="${y}" r="4" fill="#D4AF37"/>`
+                  : '';
+              }).join('')}
+            </svg>
+          </div>
+        </div>
+        <div class="stats-full-grid">
+          <div class="stats-full-card">
+            <div class="stats-full-card__val" style="color:var(--color-win);">${p.winRate}</div>
+            <div class="stats-full-card__label">Win Rate</div>
+          </div>
+          <div class="stats-full-card">
+            <div class="stats-full-card__val" style="color:var(--color-gold);">${p.roi}</div>
+            <div class="stats-full-card__label">ROI</div>
+          </div>
+          <div class="stats-full-card">
+            <div class="stats-full-card__val">${p.units}</div>
+            <div class="stats-full-card__label">Units Profit</div>
+          </div>
+          <div class="stats-full-card">
+            <div class="stats-full-card__val">${p.picks}</div>
+            <div class="stats-full-card__label">Total Picks</div>
+          </div>
+          <div class="stats-full-card">
+            <div class="stats-full-card__val">${p.avgOdds}</div>
+            <div class="stats-full-card__label">Avg Odds</div>
+          </div>
+          <div class="stats-full-card">
+            <div class="stats-full-card__val">${p.favSport.split(' ')[0]}</div>
+            <div class="stats-full-card__label">Best Sport</div>
+          </div>
+        </div>
+
+        <!-- Period chart buttons -->
+        <div style="padding:0 var(--space-5) var(--space-5);">
+          <div class="chart-header" style="margin-bottom:var(--space-3);">
+            <div class="chart-title">Win/Loss Breakdown</div>
+          </div>
+          <div style="display:flex;gap:var(--space-3);">
+            <div style="flex:1;background:var(--color-surface-2);border:1px solid var(--color-border-dim);border-radius:var(--radius-lg);padding:var(--space-4);text-align:center;">
+              <div style="font-family:var(--font-display);font-size:var(--text-2xl);font-weight:800;color:var(--color-win);">
+                ${Math.round(parseFloat(p.winRate) * parseInt(p.picks) / 100)}
+              </div>
+              <div style="font-size:var(--text-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.06em;">Wins</div>
+            </div>
+            <div style="flex:1;background:var(--color-surface-2);border:1px solid var(--color-border-dim);border-radius:var(--radius-lg);padding:var(--space-4);text-align:center;">
+              <div style="font-family:var(--font-display);font-size:var(--text-2xl);font-weight:800;color:var(--color-loss);">
+                ${parseInt(p.picks) - Math.round(parseFloat(p.winRate) * parseInt(p.picks) / 100)}
+              </div>
+              <div style="font-size:var(--text-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.06em;">Losses</div>
+            </div>
+            <div style="flex:1;background:var(--color-surface-2);border:1px solid var(--color-border-dim);border-radius:var(--radius-lg);padding:var(--space-4);text-align:center;">
+              <div style="font-family:var(--font-display);font-size:var(--text-2xl);font-weight:800;color:var(--color-text-muted);">3</div>
+              <div style="font-size:var(--text-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.06em;">Pushes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Bind tab switching
+    main.querySelectorAll('.profile-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        const tabName = this.getAttribute('onclick').match(/'([^']+)'\)/)[1];
+        switchProfileTab(this, tabName);
+      });
+    });
+
+    // Bind chart period buttons
+    main.querySelectorAll('.chart-period-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        main.querySelectorAll('.chart-period-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // Bind post interactions on profile page
+    main.querySelectorAll('.post, .explore-pick-row').forEach(el => bindPostInteractions(el));
+  }
+
+  function renderMiniPost(post) {
+    const isPremium = post.premium;
+    return `
+    <article class="post" style="border-left: ${post.isOwn ? '3px solid var(--color-gold)' : 'none'};">
+      <div class="post__header">
+        <div class="post__user">
+          <div class="avatar-placeholder avatar--md" style="background:${post.avatarBg};color:${post.avatarColor};font-weight:800;">${post.initials}</div>
+          <div>
+            <div class="post__username">${post.username}${post.verified ? ' <span class="v-icon">✦</span>' : ''}</div>
+            <div class="post__meta">${post.winRate} W/L &nbsp;·&nbsp; ${post.timeAgo}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          ${post.status === 'live' ? '<span class="badge badge--live"><span class="live-dot"></span>LIVE</span>'
+            : post.status === 'win' ? '<span class="badge badge--win">✓ WIN</span>'
+            : post.status === 'premium' ? '<span class="badge badge--premium">🔒 PREMIUM</span>'
+            : '<span class="badge badge--push">⏳ Pending</span>'}
+        </div>
+      </div>
+      <div class="post__game-card">
+        <div class="post__game-top">
+          <span class="post__game-league">${post.league}</span>
+        </div>
+        <div class="post__bet-line">
+          <div>
+            <div class="post__bet-type">${post.betType}</div>
+            <div class="post__bet-pick">${isPremium ? '████████' : post.pick}</div>
+          </div>
+          <div class="post__bet-odds" style="${isPremium ? 'filter:blur(4px)' : ''}">${isPremium ? '████' : post.odds}</div>
+        </div>
+      </div>
+      ${post.caption ? `<p class="post__caption ${isPremium ? 'post__caption--blur' : ''}">${post.caption}</p>` : ''}
+      <div class="post__footer">
+        <div class="post__actions">
+          <button class="post__act like-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            <span class="count">${post.likes}</span>
+          </button>
+          <button class="post__act">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span class="count">${post.comments}</span>
+          </button>
+        </div>
+        <button class="post__act save-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+        </button>
+      </div>
+    </article>`;
+  }
+
+  // ============================================================
+  // PROFILE TAB SWITCHING
+  // ============================================================
+  function switchProfileTab(btn, tabName) {
+    const main = document.getElementById('profileMain');
+    if (!main) return;
+    main.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    main.querySelectorAll('.profile-tab-content').forEach(c => c.classList.remove('active'));
+    const target = main.querySelector('#ptab-' + tabName);
+    if (target) target.classList.add('active');
+  }
+
+  // ============================================================
+  // PROFILE FOLLOW BUTTON
+  // ============================================================
+  function handleProfileFollow(btn) {
+    const isFollowing = btn.classList.toggle('btn--primary');
+    btn.classList.toggle('btn--outline', !isFollowing);
+    btn.textContent = isFollowing ? 'Following' : 'Follow';
+  }
+
+  // ============================================================
+  // EXPLORE — render trending picks from POSTS_DB
+  // ============================================================
+  function renderExplorePicks() {
+    const container = document.getElementById('explorePicks');
+    if (!container || container.innerHTML.trim()) return; // already rendered
+    container.innerHTML = POSTS_DB.slice(0, 4).map(p => renderMiniPost(p)).join('');
+    container.querySelectorAll('.post').forEach(el => bindPostInteractions(el));
+  }
+
+  // ============================================================
+  // EXPLORE — search
+  // ============================================================
+  (function initExploreSearch() {
+    const input = document.getElementById('exploreSearch');
+    const results = document.getElementById('searchResults');
+    if (!input || !results) return;
+    input.addEventListener('focus', () => {
+      if (input.value.trim().length > 0) results.classList.add('open');
+    });
+    input.addEventListener('input', () => {
+      results.classList.toggle('open', input.value.trim().length > 0);
+    });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#exploreSearchWrap')) results.classList.remove('open');
+    });
+  })();
+
+  // ============================================================
+  // NOTIFICATIONS
+  // ============================================================
+  function switchNotifTab(btn, type) {
+    document.querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    const items = document.querySelectorAll('.notif-item');
+    items.forEach(item => {
+      if (type === 'all') { item.style.display = ''; return; }
+      const icon = item.querySelector('.notif-icon');
+      const show = (type === 'likes' && icon.classList.contains('notif-icon--like'))
+        || (type === 'follows' && icon.classList.contains('notif-icon--follow'))
+        || (type === 'subs' && icon.classList.contains('notif-icon--sub'));
+      item.style.display = show ? '' : 'none';
+    });
+  }
+
+  function markAllRead() {
+    document.querySelectorAll('.notif-item.unread').forEach(item => {
+      item.classList.remove('unread');
+    });
+    // Clear badges
+    document.querySelectorAll('.sidebar-link__badge').forEach(badge => {
+      if (badge.closest('a') && badge.closest('a').onclick &&
+          badge.closest('a').onclick.toString().includes('notifications')) {
+        badge.style.display = 'none';
+      }
+    });
+  }
+
+  // ============================================================
+  // FOLLOW TOGGLE (global, used across all pages)
+  // ============================================================
+  function toggleFollow(btn) {
+    const following = btn.classList.toggle('following');
+    btn.textContent = following ? 'Following' : 'Follow';
+  }
+
+  // ============================================================
+  // MOBILE NAV — updated with all destinations
+  // ============================================================
+  (function initMobileNavAll() {
+    // Any mobile-nav-link with onclick already set by wireFeedSidebar
+    // Add click on composer button on new pages too
+    document.querySelectorAll('[onclick="openComposer()"]').forEach(btn => {
+      btn.onclick = (e) => { e.preventDefault(); openComposer(); };
+    });
+  })();
+
+  // ============================================================
+  // INIT ON LOAD
+  // ============================================================
+  (function onAppReady() {
+    // Wire existing feed like/save buttons (initial 4 sample posts)
+    rebindFeedInteractions();
+    // If landing on feed directly via hash, re-render
+    const hash = window.location.hash.replace('#','');
+    if (hash === 'profile') renderProfile('me');
+    if (hash === 'explore') renderExplorePicks();
+  })();
+
   </script>
 
 </body>
